@@ -1,0 +1,30 @@
+===================
+Sat Oct 14 11:06:54 2023: connected from 127.0.0.1, port 50330
+recv id: 110550091
+
+sent: 19270 46208
+
+recv 65478 => assuming error! nak sent.
+sent: 48504 53969
+
+recv 102473 => correct! ok sent.
+Sat Oct 14 11:06:54 2023: disconnected from 127.0.0.1, port 50330
+===================
+Sat Oct 14 11:07:16 2023: connected from 127.0.0.1, port 50336
+recv id: 110550091
+
+sent: 61344 50488
+
+recv 111832 => correct! ok sent.
+Sat Oct 14 11:07:16 2023: disconnected from 127.0.0.1, port 50336
+===================
+Sat Oct 14 11:07:53 2023: connected from 127.0.0.1, port 50337
+recv id: 110550091
+
+sent: 27843 18962
+
+recv 46805 => assuming error! nak sent.
+sent: 35649 7655
+
+recv 43304 => correct! ok sent.
+Sat Oct 14 11:07:53 2023: disconnected from 127.0.0.1, port 50337

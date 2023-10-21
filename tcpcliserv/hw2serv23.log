@@ -1,0 +1,242 @@
+===================
+Sat Oct 21 14:04:04 2023: connected from 127.0.0.1, port 56378
+Sat Oct 21 14:04:11 2023: recv id & IP addr: 110550091 127.0.0.1
+			waiting for 3 line(s)
+Sat Oct 21 14:04:11 2023: no response. quitting
+Sat Oct 21 14:04:11 2023: disconnected from 127.0.0.1, port 56378
+===================
+Sat Oct 21 14:26:29 2023: connected from 127.0.0.1, port 57041
+Sat Oct 21 14:26:49 2023: recv id & IP addr: 110550091 127.0.0.1
+			waiting for 8 line(s)
+Sat Oct 21 14:26:49 2023: no response. quitting
+Sat Oct 21 14:26:49 2023: disconnected from 127.0.0.1, port 57041
+===================
+Sat Oct 21 14:27:24 2023: connected from 127.0.0.1, port 57048
+Sat Oct 21 14:27:36 2023: recv id & IP addr: 110550091 127.0.0.1
+			waiting for 3 line(s)
+Sat Oct 21 14:27:36 2023: no response. quitting
+Sat Oct 21 14:27:36 2023: disconnected from 127.0.0.1, port 57048
+===================
+Sat Oct 21 14:36:09 2023: connected from 127.0.0.1, port 57199
+Sat Oct 21 14:36:09 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 8 line(s)
+Sat Oct 21 14:36:15 2023: recv: 1
+Sat Oct 21 14:36:15 2023: recv: 2
+Sat Oct 21 14:36:16 2023: recv: 3
+Sat Oct 21 14:36:16 2023: recv: 4
+Sat Oct 21 14:36:17 2023: recv: 5
+Sat Oct 21 14:36:18 2023: recv: 6
+Sat Oct 21 14:36:18 2023: recv: 7
+Sat Oct 21 14:36:19 2023: recv: 8
+Sat Oct 21 14:36:19 2023: end of input! "stop" sent.
+Sat Oct 21 14:36:23 2023: no line count received. quitting
+Sat Oct 21 14:36:23 2023: disconnected from 127.0.0.1, port 57199
+===================
+Sat Oct 21 14:37:19 2023: connected from 127.0.0.1, port 57232
+Sat Oct 21 14:37:19 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 8 line(s)
+Sat Oct 21 14:37:23 2023: no response. quitting
+Sat Oct 21 14:37:23 2023: disconnected from 127.0.0.1, port 57232
+===================
+Sat Oct 21 14:37:25 2023: connected from 127.0.0.1, port 57233
+Sat Oct 21 14:37:25 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 10 line(s)
+Sat Oct 21 14:37:27 2023: recv: 1
+Sat Oct 21 14:37:27 2023: recv: 2
+Sat Oct 21 14:37:28 2023: recv: 3
+Sat Oct 21 14:37:28 2023: recv: 4
+Sat Oct 21 14:37:29 2023: recv: 5
+Sat Oct 21 14:37:29 2023: recv: 6
+Sat Oct 21 14:37:30 2023: recv: 7
+Sat Oct 21 14:37:30 2023: recv: 8
+Sat Oct 21 14:37:31 2023: recv: 9
+Sat Oct 21 14:37:32 2023: recv: 10
+Sat Oct 21 14:37:32 2023: end of input! "stop" sent.
+Sat Oct 21 14:37:34 2023: no line count received. quitting
+Sat Oct 21 14:37:34 2023: disconnected from 127.0.0.1, port 57233
+===================
+Sat Oct 21 14:39:49 2023: connected from 127.0.0.1, port 57300
+Sat Oct 21 14:39:49 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 8 line(s)
+Sat Oct 21 14:39:56 2023: recv: 1
+Sat Oct 21 14:39:59 2023: recv: 2
+Sat Oct 21 14:39:59 2023: recv: 3
+Sat Oct 21 14:40:00 2023: recv: 4
+Sat Oct 21 14:40:01 2023: recv: 5
+Sat Oct 21 14:40:01 2023: recv: 6
+Sat Oct 21 14:40:02 2023: recv: 7
+Sat Oct 21 14:40:03 2023: recv: 8
+Sat Oct 21 14:40:03 2023: end of input! "stop" sent.
+Sat Oct 21 14:40:10 2023: no line count received. quitting
+Sat Oct 21 14:40:10 2023: disconnected from 127.0.0.1, port 57300
+===================
+Sat Oct 21 14:41:48 2023: connected from 127.0.0.1, port 57359
+Sat Oct 21 14:41:48 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 1 line(s)
+Sat Oct 21 14:41:51 2023: no response. quitting
+Sat Oct 21 14:41:51 2023: disconnected from 127.0.0.1, port 57359
+===================
+Sat Oct 21 14:41:54 2023: connected from 127.0.0.1, port 57360
+Sat Oct 21 14:41:54 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 3 line(s)
+Sat Oct 21 14:41:55 2023: recv: 1
+Sat Oct 21 14:41:56 2023: recv: 2
+Sat Oct 21 14:41:56 2023: recv: 3
+Sat Oct 21 14:41:56 2023: end of input! "stop" sent.
+Sat Oct 21 14:42:01 2023: no line count received. quitting
+Sat Oct 21 14:42:01 2023: disconnected from 127.0.0.1, port 57360 
+===================
+Sat Oct 21 14:42:59 2023: connected from 127.0.0.1, port 57411
+Sat Oct 21 14:42:59 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 8 line(s)
+Sat Oct 21 14:43:00 2023: recv: 1
+Sat Oct 21 14:43:01 2023: recv: 2
+Sat Oct 21 14:43:01 2023: recv: 3
+Sat Oct 21 14:43:02 2023: recv: 4
+Sat Oct 21 14:43:02 2023: recv: 5
+Sat Oct 21 14:43:03 2023: recv: 6
+Sat Oct 21 14:43:03 2023: recv: 7
+Sat Oct 21 14:43:04 2023: recv: 8
+Sat Oct 21 14:43:04 2023: end of input! "stop" sent.
+Sat Oct 21 14:43:07 2023: no line count received. quitting
+Sat Oct 21 14:43:07 2023: disconnected from 127.0.0.1, port 57411
+===================
+Sat Oct 21 14:44:48 2023: connected from 127.0.0.1, port 57436
+Sat Oct 21 14:44:48 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 1 line(s)
+Sat Oct 21 14:44:49 2023: recv: 1
+Sat Oct 21 14:44:49 2023: end of input! "stop" sent.
+Sat Oct 21 14:44:49 2023: recv line count & IP addr: 1 127.0.0.1
+ => correct! "ok" sent.
+Sat Oct 21 14:44:49 2023: disconnected from 127.0.0.1, port 57436
+===================
+Sat Oct 21 14:46:22 2023: connected from 127.0.0.1, port 57472
+Sat Oct 21 14:46:22 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 9 line(s)
+Sat Oct 21 14:46:23 2023: recv: 1
+Sat Oct 21 14:46:24 2023: recv: 2
+Sat Oct 21 14:46:24 2023: recv: 3
+Sat Oct 21 14:46:25 2023: recv: 4
+Sat Oct 21 14:46:25 2023: recv: 5
+Sat Oct 21 14:46:26 2023: recv: 6
+Sat Oct 21 14:46:26 2023: recv: 7
+Sat Oct 21 14:46:27 2023: recv: 8
+Sat Oct 21 14:46:27 2023: recv: 9
+Sat Oct 21 14:46:27 2023: end of input! "stop" sent.
+Sat Oct 21 14:46:27 2023: recv line count & IP addr: 9 127.0.0.1
+ => correct! "ok" sent.
+Sat Oct 21 14:46:27 2023: disconnected from 127.0.0.1, port 57472
+===================
+Sat Oct 21 14:47:15 2023: connected from 127.0.0.1, port 57489
+Sat Oct 21 14:47:15 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 10 line(s)
+Sat Oct 21 14:47:16 2023: recv: 1
+Sat Oct 21 14:47:16 2023: recv: 2
+Sat Oct 21 14:47:17 2023: recv: 3
+Sat Oct 21 14:47:17 2023: recv: 4
+Sat Oct 21 14:47:18 2023: recv: 5
+Sat Oct 21 14:47:18 2023: recv: 6
+Sat Oct 21 14:47:18 2023: recv: 7
+Sat Oct 21 14:47:19 2023: recv: 8
+Sat Oct 21 14:47:19 2023: recv: 9
+Sat Oct 21 14:47:20 2023: recv: 10
+Sat Oct 21 14:47:20 2023: end of input! "stop" sent.
+Sat Oct 21 14:47:20 2023: recv line count & IP addr: 10 127.0.0.1
+ => correct! "ok" sent.
+Sat Oct 21 14:47:20 2023: disconnected from 127.0.0.1, port 57489
+===================
+Sat Oct 21 14:48:55 2023: connected from 127.0.0.1, port 57540
+Sat Oct 21 14:48:55 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 10 line(s)
+Sat Oct 21 14:48:55 2023: recv: 1
+Sat Oct 21 14:48:56 2023: recv: 2
+Sat Oct 21 14:48:56 2023: recv: 3
+Sat Oct 21 14:48:56 2023: recv: 4
+Sat Oct 21 14:48:57 2023: recv: 5
+Sat Oct 21 14:48:57 2023: recv: 6
+Sat Oct 21 14:48:58 2023: recv: 7
+Sat Oct 21 14:48:58 2023: recv: 8
+Sat Oct 21 14:48:58 2023: recv: 9
+Sat Oct 21 14:48:59 2023: recv: 10
+Sat Oct 21 14:48:59 2023: end of input! "stop" sent.
+Sat Oct 21 14:49:02 2023: no line count received. quitting
+Sat Oct 21 14:49:02 2023: disconnected from 127.0.0.1, port 57540
+===================
+Sat Oct 21 14:50:29 2023: connected from 127.0.0.1, port 57562
+Sat Oct 21 14:50:29 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 8 line(s)
+Sat Oct 21 14:50:30 2023: recv: 1
+Sat Oct 21 14:50:30 2023: recv: 2
+Sat Oct 21 14:50:30 2023: recv: 3
+Sat Oct 21 14:50:31 2023: recv: 4
+Sat Oct 21 14:50:31 2023: recv: 5
+Sat Oct 21 14:50:32 2023: recv: 6
+Sat Oct 21 14:50:32 2023: recv: 7
+Sat Oct 21 14:50:33 2023: recv: 8
+Sat Oct 21 14:50:33 2023: end of input! "stop" sent.
+Sat Oct 21 14:50:33 2023: recv line count & IP addr: 8
+ => wrong! nak sent.
+Sat Oct 21 14:50:33 2023: disconnected from 127.0.0.1, port 57562
+===================
+Sat Oct 21 14:51:27 2023: connected from 127.0.0.1, port 57585
+Sat Oct 21 14:51:27 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 4 line(s)
+Sat Oct 21 14:51:29 2023: no response. quitting
+Sat Oct 21 14:51:29 2023: disconnected from 127.0.0.1, port 57585
+===================
+Sat Oct 21 14:51:32 2023: connected from 127.0.0.1, port 57586
+Sat Oct 21 14:51:32 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 9 line(s)
+Sat Oct 21 14:51:33 2023: recv: 1
+Sat Oct 21 14:51:33 2023: recv: 2
+Sat Oct 21 14:51:33 2023: recv: 3
+Sat Oct 21 14:51:34 2023: recv: 4
+Sat Oct 21 14:51:34 2023: recv: 5
+Sat Oct 21 14:51:35 2023: recv: 6
+Sat Oct 21 14:51:35 2023: recv: 7
+Sat Oct 21 14:51:36 2023: recv: 
+Sat Oct 21 14:51:37 2023: recv: 8
+Sat Oct 21 14:51:37 2023: end of input! "stop" sent.
+Sat Oct 21 14:51:37 2023: recv line count & IP addr: 9 127.0.0.1
+ => correct! "ok" sent.
+Sat Oct 21 14:51:37 2023: disconnected from 127.0.0.1, port 57586
+===================
+Sat Oct 21 14:52:24 2023: connected from 127.0.0.1, port 57615
+Sat Oct 21 14:52:24 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 3 line(s)
+Sat Oct 21 14:52:24 2023: recv: 1
+Sat Oct 21 14:52:25 2023: recv: 2
+Sat Oct 21 14:52:25 2023: recv: 3
+Sat Oct 21 14:52:25 2023: end of input! "stop" sent.
+Sat Oct 21 14:52:25 2023: recv line count & IP addr: 3 127.0.0.1
+ => correct! "ok" sent.
+Sat Oct 21 14:52:25 2023: disconnected from 127.0.0.1, port 57615
+===================
+Sat Oct 21 14:53:40 2023: connected from 127.0.0.1, port 57665
+Sat Oct 21 14:53:40 2023: recv id & IP addr: 110550091 127.0.0.1
+
+			waiting for 5 line(s)
+Sat Oct 21 14:53:41 2023: recv: 1
+Sat Oct 21 14:53:41 2023: recv: 2
+Sat Oct 21 14:53:42 2023: recv: 3
+Sat Oct 21 14:53:43 2023: recv: 4
+Sat Oct 21 14:53:44 2023: recv: 5
+Sat Oct 21 14:53:44 2023: end of input! "stop" sent.
+Sat Oct 21 14:53:44 2023: recv line count & IP addr: 5 127.0.0.1
+ => correct! "ok" sent.
+Sat Oct 21 14:53:44 2023: disconnected from 127.0.0.1, port 57665
