@@ -10,13 +10,14 @@ main(int argc, char **argv)
 	struct hostent		*hp;
 	struct servent		*sp;
 
-	if (argc != 3)
-		err_quit("usage: daytimetcpcli2 <hostname> <service>");
+	if (argc != 3) 
+		err_quit("usage: daytimetcpcli2 <hostname or IP address> <service name or port number> ");
 
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 
-	if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) == 1) {
+	// valid ip adress returns 1, invalid ip adress returns 0
+	if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) == 1) { 
 		addrs[0] = &servaddr.sin_addr;
 		addrs[1] = NULL;
 		pptr = &addrs[0];
@@ -25,6 +26,7 @@ main(int argc, char **argv)
 	} else
 		err_quit("hostname error for %s: %s", argv[1], hstrerror(h_errno));
 
+	// valid port number returns nonzero integer
 	if ( (n = atoi(argv[2])) > 0)
 		servaddr.sin_port = htons(n);
 	else if ( (sp = getservbyname(argv[2], "tcp")) != NULL)
