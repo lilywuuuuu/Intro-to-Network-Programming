@@ -31,7 +31,7 @@ void exchange_data(FILE *fp, int sockfd){
             snprintf(sendline, sizeof(sendline), "%d %s\n", count, local_ip);
             Writen(sockfd, sendline, strlen(sendline));
             printf("sent: %s", sendline);
-            Readline(sockfd, recvline, MAXLINE);
+            Readline(sockfd, recvline, MAXLINE); 
             printf("%s\n", recvline);
             return;
 		}

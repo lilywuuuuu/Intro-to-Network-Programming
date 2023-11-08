@@ -4,7 +4,7 @@ PROGS =	tcpcli01 tcpcli04 tcpcli05 tcpcli06 \
 		tcpcli07 tcpcli08 tcpcli09 tcpcli10 \
 		tcpserv01 tcpserv02 tcpserv03 tcpserv04 \
 		tcpserv08 tcpserv09 tcpservselect01 tcpservpoll01 tsigpipe \
-		hw1cli hw1serv hw2cli hw2serv
+		hw1cli hw1serv hw2cli hw2serv hw3cli hw3serv
 
 all:	${PROGS}
 
@@ -19,6 +19,12 @@ hw2cli: 	hw2cli.o
 
 hw2serv: 	hw2serv.o
 		${CC} ${CFLAGS} -o $@ hw2serv.o ${LIBS}
+
+hw3cli: 	hw3cli.o
+		${CC} ${CFLAGS} -o $@ hw3cli.o ${LIBS}
+
+hw3serv: 	hw3serv.o
+		${CC} ${CFLAGS} -o $@ hw3serv.o ${LIBS}
 
 tcpcli01:	tcpcli01.o
 		${CC} ${CFLAGS} -o $@ tcpcli01.o ${LIBS}

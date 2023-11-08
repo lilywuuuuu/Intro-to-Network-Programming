@@ -1,0 +1,215 @@
+replied: 110550091 127.0.0.1 3 
+got code 23, quit!
+replied: 110550091 127.0.0.1 9
+got code 23, quit!
+replied: 110550091 127.0.0.1 8
+got code 23, quit!
+replied: 110550091 127.0.0.1 8
+got code 23, quit!
+replied: 110550091 127.0.0.1 5
+got code 23, quit!
+replied: 110550091 127.0.0.1 8
+got code 13, proceed
+Connection 0 (port #59615): written 415
+replied: 110550091 127.0.0.1 3
+got code 13, proceed
+Connection 0 (port #59840): written 711
+no data received. quitting
+Connection 1 (port #59841): written 430
+no data received. quitting
+Connection 2 (port #59842): written 784
+no data received. quitting
+[Wed Nov  8 20:12:26 2023] sendto 127.0.0.1, port 53051: nak.
+replied: 110550091 127.0.0.1 2
+got code 13, proceed
+Connection 0 (port #59861): written 929
+no data received. quitting
+Connection 1 (port #59862): written 295
+no data received. quitting
+[Wed Nov  8 20:13:03 2023] sendto 127.0.0.1, port 60984: nak.
+replied: 110550091 127.0.0.1 5
+got code 13, proceed
+Connection 0 (port #59871): written 605
+no data received. quitting
+Connection 1 (port #59872): written 595
+no data received. quitting
+Connection 2 (port #59873): written 939
+no data received. quitting
+Connection 3 (port #59874): written 418
+no data received. quitting
+Connection 4 (port #59875): written 991
+no data received. quitting
+[Wed Nov  8 20:13:42 2023] sendto 127.0.0.1, port 54322: nak.
+replied: 110550091 127.0.0.1 8
+got code 13, proceed
+Connection 0 (port #60166): written 709
+no data received. quitting
+Connection 1 (port #60167): written 310
+no data received. quitting
+Connection 2 (port #60168): written 48
+no data received. quitting
+Connection 3 (port #60169): written 763
+no data received. quitting
+Connection 4 (port #60170): written 540
+no data received. quitting
+Connection 5 (port #60171): written 418
+no data received. quitting
+Connection 6 (port #60172): written 250
+no data received. quitting
+Connection 7 (port #60173): written 353
+no data received. quitting
+[Wed Nov  8 20:20:11 2023] sendto 127.0.0.1, port 61562: nak.
+replied: 110550091 127.0.0.1 7
+got code 13, proceed
+Connection 0 (port #60249): written 101
+recv: 23019 101
+port or value not match, nak sent!
+Connection 1 (port #60250): written 317
+recv: 
+port or value not match, nak sent!
+Connection 2 (port #60251): written 320
+recv: 23531 320
+port or value not match, nak sent!
+Connection 3 (port #60252): written 189
+recv: 
+port or value not match, nak sent!
+Connection 4 (port #60253): written 880
+recv: 24043 880
+port or value not match, nak sent!
+Connection 5 (port #60254): written 720
+recv: 
+port or value not match, nak sent!
+Connection 6 (port #60255): written 594
+recv: 24555 594
+port or value not match, nak sent!
+[Wed Nov  8 20:22:18 2023] sendto 127.0.0.1, port 50135: nak.
+replied: 110550091 127.0.0.1 3
+got code 13, proceed
+Connection 0 (port #60290): written 840
+recv: 
+port or value not match, nak sent!
+Connection 1 (port #60291): written 24
+port and value match, ok sent!
+Connection 2 (port #60292): written 984
+recv: 
+port or value not match, nak sent!
+[Wed Nov  8 20:23:46 2023] sendto 127.0.0.1, port 49716: nak.
+replied: 110550091 127.0.0.1 3
+got code 13, proceed
+Connection 0 (port #60387): written 607
+port and value match, ok sent!
+Connection 1 (port #60388): written 592
+recv: 
+port or value not match, nak sent!
+Connection 2 (port #60389): written 909
+recv: port or value not match, nak sent!
+[Wed Nov  8 20:29:46 2023] sendto 127.0.0.1, port 56008: nak.
+replied: 110550091 127.0.0.1 6
+got code 13, proceed
+Connection 0 (port #60458): written 184
+recv: Noport or value not match, nak sent!
+Connection 1 (port #60459): written 269
+recv: Noport or value not match, nak sent!
+Connection 2 (port #60460): written 68
+recv: +@port or value not match, nak sent!
+Connection 3 (port #60461): written 37
+recv: Noport or value not match, nak sent!
+Connection 4 (port #60462): written 91
+recv: +@port or value not match, nak sent!
+Connection 5 (port #60463): written 164
+recv: Noport or value not match, nak sent!
+[Wed Nov  8 20:32:15 2023] sendto 127.0.0.1, port 55378: nak.
+replied: 110550091 127.0.0.1 1
+got code 13, proceed
+Connection 0 (port #60491): written 944
+recv: +@port or value not match, nak sent!
+[Wed Nov  8 20:32:50 2023] sendto 127.0.0.1, port 51798: nak.
+replied: 110550091 127.0.0.1 3
+got code 13, proceed
+Connection 0 (port #60544): written 474
+recv: Noport or value not match, nak sent!
+Connection 1 (port #60545): written 759
+recv: Noport or value not match, nak sent!
+Connection 2 (port #60546): written 260
+recv: +@port or value not match, nak sent!
+[Wed Nov  8 20:33:56 2023] sendto 127.0.0.1, port 56335: nak.
+replied: 110550091 127.0.0.1 6
+got code 13, proceed
+Connection 0 (port #60684): written 83
+port and value match, ok sent!
+Connection 1 (port #60685): written 591
+recv: 
+port or value not match, nak sent!
+Connection 2 (port #60686): written 492
+port and value match, ok sent!
+Connection 3 (port #60687): written 588
+recv: 
+port or value not match, nak sent!
+Connection 4 (port #60688): written 215
+port and value match, ok sent!
+Connection 5 (port #60689): written 792
+recv: 
+port or value not match, nak sent!
+[Wed Nov  8 20:39:15 2023] sendto 127.0.0.1, port 62074: nak.
+replied: 110550091 127.0.0.1 3
+got code 13, proceed
+Connection 0 (port #60732): written 965
+port and value match, ok sent!
+Connection 1 (port #60733): written 322
+port and value match, ok sent!
+Connection 2 (port #60734): written 585
+port and value match, ok sent!
+[Wed Nov  8 20:55:46 2023] sendto 127.0.0.1, port 55548: ok.
+replied: 110550091 127.0.0.1 10
+got code 13, proceed
+Connection 0 (port #60894): written 759
+port and value match, ok sent!
+Connection 1 (port #60895): written 849
+port and value match, ok sent!
+Connection 2 (port #60896): written 727
+port and value match, ok sent!
+Connection 3 (port #60897): written 378
+port and value match, ok sent!
+Connection 4 (port #60898): written 666
+port and value match, ok sent!
+Connection 5 (port #60899): written 822
+port and value match, ok sent!
+Connection 6 (port #60900): written 50
+port and value match, ok sent!
+Connection 7 (port #60901): written 1015
+port and value match, ok sent!
+Connection 8 (port #60902): written 919
+port and value match, ok sent!
+Connection 9 (port #60903): written 626
+port and value match, ok sent!
+[Wed Nov  8 21:01:27 2023] sendto 127.0.0.1, port 54042: ok.
+replied: 110550091 127.0.0.1 9
+got code 13, proceed
+Connection 0 (port #60940): written 679
+port and value match, ok sent!
+Connection 1 (port #60941): written 973
+port and value match, ok sent!
+Connection 2 (port #60942): written 75
+port and value match, ok sent!
+Connection 3 (port #60943): written 394
+port and value match, ok sent!
+Connection 4 (port #60944): written 303
+port and value match, ok sent!
+Connection 5 (port #60945): written 337
+port and value match, ok sent!
+Connection 6 (port #60946): written 487
+port and value match, ok sent!
+Connection 7 (port #60947): written 520
+port and value match, ok sent!
+Connection 8 (port #60948): written 242
+port and value match, ok sent!
+[Wed Nov  8 21:02:24 2023] sendto 127.0.0.1, port 59997: ok.
+replied: 110550091 127.0.0.1 3
+got code 13, proceed
+Connection 0 (port #61019): written 599
+port and value match, ok sent!
+Connection 1 (port #61020): written 33
+port and value match, ok sent!
+Connection 2 (port #61021): written 885
+port and value match, ok sent!
+[Wed Nov  8 21:05:56 2023] sendto 127.0.0.1, port 52876: ok.

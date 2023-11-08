@@ -1,0 +1,99 @@
+
+[Wed Nov  8 20:04:42 2023] recvfrom 127.0.0.1, port 61170: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 5
+
+[Wed Nov  8 20:05:01 2023] recvfrom 127.0.0.1, port 57568: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 8
+Creating 8 connections...
+
+[Wed Nov  8 20:12:26 2023] recvfrom 127.0.0.1, port 53051: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 3
+Creating 3 connections...
+[Wed Nov  8 20:12:26 2023] sendto 127.0.0.1, port 53051: nak.
+
+[Wed Nov  8 20:13:03 2023] recvfrom 127.0.0.1, port 60984: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 2
+Creating 2 connections...
+[Wed Nov  8 20:13:03 2023] sendto 127.0.0.1, port 60984: nak.
+
+[Wed Nov  8 20:13:42 2023] recvfrom 127.0.0.1, port 54322: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 5
+Creating 5 connections...
+[Wed Nov  8 20:13:42 2023] sendto 127.0.0.1, port 54322: nak.
+
+[Wed Nov  8 20:20:11 2023] recvfrom 127.0.0.1, port 61562: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 8
+Creating 8 connections...
+[Wed Nov  8 20:20:11 2023] sendto 127.0.0.1, port 61562: nak.
+
+[Wed Nov  8 20:22:18 2023] recvfrom 127.0.0.1, port 50135: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 7
+Creating 7 connections...
+[Wed Nov  8 20:22:18 2023] sendto 127.0.0.1, port 50135: nak.
+
+[Wed Nov  8 20:23:46 2023] recvfrom 127.0.0.1, port 49716: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 3
+Creating 3 connections...
+[Wed Nov  8 20:23:46 2023] sendto 127.0.0.1, port 49716: nak.
+
+[Wed Nov  8 20:29:46 2023] recvfrom 127.0.0.1, port 56008: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 3
+Creating 3 connections...
+[Wed Nov  8 20:29:46 2023] sendto 127.0.0.1, port 56008: nak.
+
+[Wed Nov  8 20:32:15 2023] recvfrom 127.0.0.1, port 55378: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 6
+Creating 6 connections...
+[Wed Nov  8 20:32:15 2023] sendto 127.0.0.1, port 55378: nak.
+
+[Wed Nov  8 20:32:50 2023] recvfrom 127.0.0.1, port 51798: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 1
+Creating 1 connections...
+[Wed Nov  8 20:32:50 2023] sendto 127.0.0.1, port 51798: nak.
+
+[Wed Nov  8 20:33:56 2023] recvfrom 127.0.0.1, port 56335: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 3
+Creating 3 connections...
+[Wed Nov  8 20:33:56 2023] sendto 127.0.0.1, port 56335: nak.
+
+[Wed Nov  8 20:39:15 2023] recvfrom 127.0.0.1, port 62074: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 6
+Creating 6 connections...
+[Wed Nov  8 20:39:15 2023] sendto 127.0.0.1, port 62074: nak.
+
+[Wed Nov  8 20:55:46 2023] recvfrom 127.0.0.1, port 55548: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 3
+Creating 3 connections...
+[Wed Nov  8 20:55:46 2023] sendto 127.0.0.1, port 55548: ok.
+
+[Wed Nov  8 21:01:27 2023] recvfrom 127.0.0.1, port 54042: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 10
+Creating 10 connections...
+[Wed Nov  8 21:01:27 2023] sendto 127.0.0.1, port 54042: ok.
+
+[Wed Nov  8 21:02:24 2023] recvfrom 127.0.0.1, port 59997: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 9
+Creating 9 connections...
+[Wed Nov  8 21:02:24 2023] sendto 127.0.0.1, port 59997: ok.
+
+[Wed Nov  8 21:05:56 2023] recvfrom 127.0.0.1, port 52876: 110550091 9880
+Student ID = 110550091, TCP Serv addr = 127.0.0.1, TCP Serv port = 9880
+replied: 110550091 127.0.0.1 3
+Creating 3 connections...
+[Wed Nov  8 21:05:56 2023] sendto 127.0.0.1, port 52876: ok.
