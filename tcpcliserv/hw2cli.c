@@ -8,12 +8,13 @@ void exchange_data(FILE *fp, int sockfd){
     char    local_ip[30];
 	int 	count = 0, maxfdp1;
     fd_set  rset; 
-    struct sockaddr_in addr;
-    socklen_t addrlen = sizeof(addr);
+    struct sockaddr_in local_addr;
+    socklen_t local_addrlen;
 
     // get local ip 
-    getsockname(sockfd, (struct sockaddr *) &addr, &addrlen);
-    char* ip_str = inet_ntoa(addr.sin_addr);
+	local_addrlen = sizeof(local_addr);
+    getsockname(sockfd, (SA *) &local_addr, &local_addrlen);
+    char* ip_str = inet_ntoa(local_addr.sin_addr);
     strcpy(local_ip, ip_str);
     snprintf(id_ip, sizeof(id_ip), "%s %s\n", student_id, local_ip);
     // send student id + local ip

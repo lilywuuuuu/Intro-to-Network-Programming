@@ -1,8 +1,6 @@
 #include	"unp.h"
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	int					sockfd;
 	struct sockaddr_in	servaddr;
 
@@ -17,7 +15,6 @@ main(int argc, char **argv)
 	Inet_pton(AF_INET, argv[1], &servaddr.sin_addr);
 
 	Connect(sockfd, (SA *) &servaddr, sizeof(servaddr));
-
 	str_cli(stdin, sockfd);		/* do it all */
 
 	exit(0);

@@ -96,7 +96,7 @@ main(int argc, char **argv)
                         fprintf(fp, "===================\n");
                         fprintf (fp, "%.24s: connected from %s, port %d\n",
                         ctime(&ticks),
-                        Inet_ntop(AF_INET, &cliaddr.sin_addr, buff, sizeof (buff)),
+                        Inet_ntop(AF_INET, &cliaddr.sin_addr, buff, sizeof(buff)),
                         ntohs(cliaddr.sin_port));
                         srand((int) ticks);
 
@@ -104,7 +104,7 @@ main(int argc, char **argv)
                         ticks = time(NULL);
                         fprintf (fp, "%.24s: disconnected from %s, port %d\n",
                              ctime(&ticks),
-                             Inet_ntop(AF_INET, &cliaddr.sin_addr, buff, sizeof (buff)),
+                             Inet_ntop(AF_INET, &cliaddr.sin_addr, buff, sizeof(buff)),
                              ntohs(cliaddr.sin_port));
 
 			exit(0);
