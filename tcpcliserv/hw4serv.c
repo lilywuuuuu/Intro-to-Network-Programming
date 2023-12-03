@@ -19,6 +19,8 @@ int main(int argc, char **argv){
 	struct sockaddr_in	cliaddr1, cliaddr2, servaddr;
     char                buff[MAXLINE], recvline[MAXLINE], sendline[MAXLINE];
     char                name1[20], name2[20], compare[MAXLINE]; 
+    char                message1[100] = "You are the 1st user. Wait for the second one!\n";
+    char                message2[100] = "You are the 2nd user.\n";
     time_t			    ticks;
     fd_set              rset; 
 
@@ -46,9 +48,8 @@ int main(int argc, char **argv){
                 n = Read(connfd1, name1, 20);
                 name1[n] = '\0';
                 printf("Recv: %s\n", name1);
-                Writen(connfd1, "You are the 1st user. Wait for the second one!\n", 48);
+                Writen(connfd1, message1, strlen(message1));
                 printf("Sent: %s is the 1st user.\n", name1);
-                Writen(connfd1, "\n", 2); // ?
                 getpeername(connfd1, (SA *) &cliaddr1, &clilen1);
                 client_count++;
             } else if (client_count == 1){ // second user
@@ -61,14 +62,24 @@ int main(int argc, char **argv){
                 n = Read(connfd2, name2, 20);
                 name2[n] = '\0';
                 printf("Recv: %s\n", name2);
-                Writen(connfd2, "You are the 2nd user.\n", 23); 
+                Writen(connfd2, message2, strlen(message2)); 
                 printf("Sent: %s is the 2nd user.\n", name2);
-                Writen(connfd2, "\n", 2); // ?
                 getpeername(connfd2, (SA *) &cliaddr2, &clilen2);
                 client_count++;
             }
         }
+        // tell the other client about peer's info
+        snprintf(sendline, sizeof(sendline), "The second user is %s from %s\n", name2, 
+            Inet_ntop(AF_INET, (SA *) &cliaddr2.sin_addr, buff, sizeof(buff))); 
+        Writen(connfd1, sendline, strlen(sendline));
+        printf("Sent: %s", sendline);
 
+        snprintf(sendline, sizeof(sendline), "The first user is %s from %s\n", name1, 
+            Inet_ntop(AF_INET, (SA *) &cliaddr1.sin_addr, buff, sizeof(buff))); 
+        Writen(connfd2, sendline, strlen(sendline));
+        printf("Sent: %s", sendline);
+        
+        // fork child
 		if ( (childpid = Fork()) == 0) {	/* child process */
 			Close(listenfd);	/* close listening socket */
             ticks = time(NULL);
@@ -157,16 +168,6 @@ int main(int argc, char **argv){
             }
 			exit(0);
 		}
-        // tell the other client about peer's info
-        snprintf(sendline, sizeof(sendline), "The second user is %s from %s\n", name2, 
-            Inet_ntop(AF_INET, (SA *) &cliaddr2.sin_addr, buff, sizeof(buff))); 
-        Writen(connfd1, sendline, strlen(sendline));
-        printf("Sent: %s", sendline);
-
-        snprintf(sendline, sizeof(sendline), "The first user is %s from %s\n", name1, 
-            Inet_ntop(AF_INET, (SA *) &cliaddr1.sin_addr, buff, sizeof(buff))); 
-        Writen(connfd2, sendline, strlen(sendline));
-        printf("Sent: %s", sendline);
 
 		Close(connfd1);			/* parent closes connected socket */
         Close(connfd2);
