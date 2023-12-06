@@ -32,6 +32,12 @@ hw4cli: 	hw4cli.o
 hw4serv: 	hw4serv.o
 		${CC} ${CFLAGS} -o $@ hw4serv.o ${LIBS}
 
+hw5cli: 	hw5cli.o
+		${CC} ${CFLAGS} -o $@ hw5cli.o ${LIBS}
+
+hw5serv: 	hw5serv.o
+		${CC} ${CFLAGS} -o $@ hw5serv.o ${LIBS}
+
 tcpcli01:	tcpcli01.o
 		${CC} ${CFLAGS} -o $@ tcpcli01.o ${LIBS}
 
