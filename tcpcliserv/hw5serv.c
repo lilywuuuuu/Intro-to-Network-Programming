@@ -15,13 +15,14 @@ void sig_chld(int signo) {
 }
 
 int main(int argc, char **argv) {
-    int listenfd, n, online_count, total_count, maxfdp1, connfd[100], left[100] = {0};
+    int listenfd, n, online_count, total_count, maxfdp1;
+    int connfd[100], left[100] = {0};
     socklen_t clilen;
     struct sockaddr_in cliaddr, servaddr;
     char names[100][100], recvline[MAXLINE], sendline[MAXLINE];
     fd_set rset, master_set;
 
-    // for TCP server
+    // set up TCP server
     listenfd = Socket(AF_INET, SOCK_STREAM, 0);
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
@@ -29,8 +30,9 @@ int main(int argc, char **argv) {
     servaddr.sin_port = htons(SERV_PORT + 3);
     Bind(listenfd, (SA *)&servaddr, sizeof(servaddr));
     Listen(listenfd, LISTENQ);
-    Signal(SIGCHLD, sig_chld); /* must call waitpid() */
+    Signal(SIGCHLD, sig_chld);
 
+    // initialize
     online_count = 0;
     total_count = 0;
     FD_ZERO(&master_set);
@@ -48,7 +50,7 @@ int main(int argc, char **argv) {
                 clilen = sizeof(cliaddr);
                 connfd[total_count] = Accept(listenfd, (SA *)&cliaddr, &clilen);
                 FD_SET(connfd[total_count], &master_set);
-                if (connfd[total_count] > maxfdp1)
+                if (connfd[total_count] + 1 > maxfdp1)
                     maxfdp1 = connfd[total_count] + 1;
 
                 // receive client name and send welcome messages
@@ -68,15 +70,6 @@ int main(int argc, char **argv) {
                         Writen(connfd[i], sendline, strlen(sendline));
                     }
                 }
-                continue;
-            } else {  // there are more than 10 people in the room
-                int tempfd = Accept(listenfd, (SA *)&cliaddr, &clilen);
-                snprintf(sendline, sizeof(sendline), "The room is full. Please try again later.\n");
-                Writen(tempfd, sendline, strlen(sendline));
-                snprintf(sendline, sizeof(sendline), "Bye!\n");
-                Writen(tempfd, sendline, strlen(sendline));
-                shutdown(tempfd, SHUT_WR);
-                Close(tempfd);
             }
         }
         // see if clients have sent messages
@@ -88,9 +81,11 @@ int main(int argc, char **argv) {
                 if (n <= 0) {
                     printf("--------- Client %d disconnected. ---------\n", i);
                     online_count--;
+
                     // tell client i bye
                     snprintf(sendline, sizeof(sendline), "Bye!\n");
                     Writen(connfd[i], sendline, strlen(sendline));
+
                     // tell others that client i left
                     if (online_count >= 2) {
                         snprintf(sendline, sizeof(sendline), "(%s left the room. %d users left.)\n", names[i], online_count);
@@ -102,14 +97,13 @@ int main(int argc, char **argv) {
                         for (int j = 1; j <= total_count; j++) {
                             if (j != i && !left[j]) Writen(connfd[j], sendline, strlen(sendline));
                         }
-                    } else {
-                        printf("No one is left in the room.\n");
-                    }
+                    } else printf("No one is left in the room.\n");
+
                     left[i] = 1;
                     FD_CLR(connfd[i], &master_set);
                     shutdown(connfd[i], SHUT_WR);
                     Close(connfd[i]);
-                } else if (n > 1) {  // send to other clients
+                } else if (n > 1) {  // send to other clients (ignore messages with only "\n")
                     printf("Receiving from client%d. connfd = %d\n", i, connfd[i]);
                     snprintf(sendline, sizeof(sendline), "(%s) %s", names[i], recvline);
                     printf("Sent client%d's message to others.\n", i);
