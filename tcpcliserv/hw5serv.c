@@ -97,12 +97,17 @@ int main(int argc, char **argv) {
                         for (int j = 1; j <= total_count; j++) {
                             if (j != i && !left[j]) Writen(connfd[j], sendline, strlen(sendline));
                         }
-                    } else printf("No one is left in the room.\n");
+                    } else
+                        printf("No one is left in the room.\n");
 
                     left[i] = 1;
                     FD_CLR(connfd[i], &master_set);
                     shutdown(connfd[i], SHUT_WR);
                     Close(connfd[i]);
+                } else if (n == 1) {  // send "\n" to other clients
+                    for (int j = 1; j <= total_count; j++) {
+                        if (j != i && !left[j]) Writen(connfd[j], "\n", 1);
+                    }
                 } else if (n > 1) {  // send to other clients (ignore messages with only "\n")
                     printf("Receiving from client%d. connfd = %d\n", i, connfd[i]);
                     snprintf(sendline, sizeof(sendline), "(%s) %s", names[i], recvline);
