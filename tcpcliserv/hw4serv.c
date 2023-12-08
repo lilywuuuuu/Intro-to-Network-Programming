@@ -162,7 +162,7 @@ int main(int argc, char **argv){
                     shutdown(connfd2, SHUT_WR); // send FIN to client 2
                     printf("Shutting down client2's connection.\n");
                     Close(connfd2);
-                    Close(connfd1);
+                    Close(connfd1); 
                     break; 
                 }
             }
