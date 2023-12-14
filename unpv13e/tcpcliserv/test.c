@@ -11,14 +11,15 @@ int main(void){
     char ch;
     while (1) { // Exit loop on 'q' keypress
         move(0, 0); // move the cursor to the beginning of the line
-        int score = 8;
-        char name[10] = "lily";
+        int score = 10;
+        int id = 12;
+        char name[15] = "Bartholomew";
         printw("===============================================================================\n");
-        printw("|-------------------------|\n");
-        printw("|\tScore Board\t  |\n");
-        printw("|\t\t\t  |\n");
-        printw("| Score   (ID)Name\t  |\n");
-        printw("| %d      |\n");
+        printw("|---------------------------|\n");
+        printw("|\t Score Board\t    |\n");
+        printw("|\t\t\t    |\n");
+        printw("| Score   Name           ID |\n");
+        printw("|  %-2d     %-15s%d |\n", score, name, id);
         printw("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         printw("===============================================================================\n");
         ch = getch();
