@@ -2,6 +2,25 @@
 #include <stdio.h>
 #include <string.h>
 
+void line(){
+    printw("=============================================================================================\n");
+}
+
+void scoreboard(int score[5], int id[5], char name[5][15]){
+    line();
+    printw("|---------------------------|\n");
+    printw("|\t Score Board\t    |\n");
+    printw("|\t\t\t    |\n");
+    printw("| Score   Name           ID |\n");
+    for (int i = 0; i < 4; i++){
+        printw("|  %-2d     %-15s%-2d |\n", score[i], name[i], id[i]);
+    }
+    printw("|\t\t\t    |\n");
+    printw("|---------------------------|\n");
+    printw("\n\n\n\n\n\n\n");
+    line();
+}
+
 int main(void) {
     initscr();             // Initialize ncurses
     cbreak();              // Line buffering disabled, pass characters immediately
@@ -11,17 +30,14 @@ int main(void) {
     char ch;
     while (1) {      // Exit loop on 'q' keypress
         move(0, 0);  // move the cursor to the beginning of the line
-        int score = 10;
-        int id[4] = {9, 5, 3, 1};
-        char name[15] = "Bartholomew";
-        printw("===============================================================================\n");
-        printw("|---------------------------|\n");
-        printw("|\t Score Board\t    |\n");
-        printw("|\t\t\t    |\n");
-        printw("| Score   Name           ID |\n");
-        printw("|  %-2d     %-15s%d |\n", score, name, id);
-        printw("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-        printw("===============================================================================\n");
+        int score[5] = {10, 3, 8, 1};
+        int id[5] = {9, 5, 3, 1};
+        char name[5][15] = {"Bartholomew", "Lily", "Johnathan", "Mary"};
+
+        // print scoreboard 
+        scoreboard(score, id, name);
+
+        // read input 
         ch = getch();
         if (ch == 'q') {
             printw("bye!\n");
@@ -32,6 +48,9 @@ int main(void) {
             printw("you pressed space!\n");
         else
             printw("you pressed %c!\n", ch);
+
+        // print message
+
         refresh();
     }
     endwin();
