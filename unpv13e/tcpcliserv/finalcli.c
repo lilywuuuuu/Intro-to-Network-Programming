@@ -118,7 +118,9 @@ int main(int argc, char **argv) {
     keypad(stdscr, TRUE);  // Enable the keypad for special keys
     nodelay(stdscr, TRUE); // Don't wait for input
 
-    fcntl(sockfd, F_SETFL, O_NONBLOCK);  // set socket to non-blocking
+    int sock_flags = fcntl(sockfd, F_GETFL, 0);
+
+    // fcntl(sockfd, F_SETFL, O_NONBLOCK);  // set socket to non-blocking
 
     char ch;
     while (1) {      // Exit loop on 'q' keypress
@@ -127,7 +129,7 @@ int main(int argc, char **argv) {
         // flipper?
         readline(sockfd, recvline, MAXLINE);
         if (recvline != NULL){ // if there is input
-            
+
         }
 
         // update scoreboard from server and get card number (readline)
