@@ -128,8 +128,27 @@ int main(int argc, char **argv) {
 
         // flipper?
         readline(sockfd, recvline, MAXLINE);
-        if (recvline != NULL){ // if there is input
+        if (recvline != NULL){
+            if (recvline == "flip\n"){ // your turn 
+                // read input
+                ch = getch();
+                if (ch == 'q') {
+                    printw("bye!\n");
+                    break;
+                } else if (ch == '\n')
+                    printw("you pressed enter!\n");
+                else if (ch == ' ')
+                    printw("you pressed space!\n");
+                else{
+                    if (ch == '\n') printw("you pressed enter!\n");
+                    else if (ch == ' ') printw("you pressed space!\n");
+                    else printw("you pressed %c!\n", ch);
+                    Writen(sockfd, "flip\n", 5);
+                }
+            }
+            else {
 
+            }
         }
 
         // update scoreboard from server and get card number (readline)

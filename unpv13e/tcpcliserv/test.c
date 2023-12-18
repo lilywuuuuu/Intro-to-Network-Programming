@@ -42,10 +42,11 @@ int main(void) {
         if (ch == 'q') {
             printw("bye!\n");
             break;
-        } else if (ch == '\n')
-            printw("you pressed enter!\n");
-        else if (ch == ' ')
-            printw("you pressed space!\n");
+        } 
+        // else if (ch == '\n')
+        //     printw("you pressed enter!\n");
+        // else if (ch == ' ')
+        //     printw("you pressed space!\n");
         else
             printw("you pressed %c!\n", ch);
 
