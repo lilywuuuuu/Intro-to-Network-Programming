@@ -8,7 +8,7 @@
 
 #include "unp.h"
 
-void handle_alarm(int sig, int sockfd){
+void handle_alarm(int sig){
     return;
 }
 
@@ -58,7 +58,8 @@ int main(int argc, char **argv) {
     snprintf(username, MAXLINE, "%s\n", argv[2]);
     Writen(sockfd, username, strlen(username));  // name
     printf("Welcome to Slapjack, %s!\n", username);
-    readline(sockfd, id, MAXLINE);  // id
+    readline(sockfd, recvline, MAXLINE);  // id
+    sscanf(recvline, "%d", &id);
     printf("Your ID is %d.\n", id);
     printf("Please wait for the server to put you in a room...\n");
 
@@ -86,19 +87,19 @@ int main(int argc, char **argv) {
             n = read(sockfd, recvline, MAXLINE);
             if (n == 0) {
                 if (stdineof == 1)
-                    return;  // normal termination
+                    return 0;  // normal termination
                 else {
                     printf("Server has shutdown.\n");
                     peer_exit = 1;
                 }
             } else if (n > 0) {
                 recvline[n] = '\0';
-                if (recvline == "sorry\n") {
+                if (strcmp(recvline, "sorry\n") == 0) {
                     printf("Sorry, the room is full. Please try again later.\n");
-                    return;  // disconnect
-                } else if (recvline == "waiting\n") {
+                    return 0;  // disconnect
+                } else if (strcmp(recvline, "waiting\n") == 0) {
                     printf("You are in a room! Please wait for the game to start.\n");
-                } else if (recvline == "start\n") {
+                } else if (strcmp(recvline, "start\n") == 0) {
                     printf("Game is starting!\n");
                     break;
                 }
@@ -125,7 +126,7 @@ int main(int argc, char **argv) {
     keypad(stdscr, TRUE);   // Enable the keypad for special keys
     // nodelay(stdscr, TRUE);  // Don't wait for input
 
-    int sock_flags = fcntl(sockfd, F_GETFL, 0);
+    // int sock_flags = fcntl(sockfd, F_GETFL, 0);
     int card_num = 0, round = 0; 
     int score[5] = {0, 0, 0, 0};
     int player_id[5] = {0, 0, 0, 0};
@@ -137,7 +138,7 @@ int main(int argc, char **argv) {
     while (1) {      // Exit loop on 'q' keypress
         // flipper?
         readline(sockfd, recvline, MAXLINE);
-        if (recvline == "flip\n") {  // your turn
+        if (strcmp(recvline, "flip\n") == 0 ) {  // your turn
             move(10, 0);
             printw("It's your turn! Press any key to flip a card.\n");
             alarm(5);
@@ -164,7 +165,9 @@ int main(int argc, char **argv) {
 
         // print scoreboard
         move(0, 0);
-        scoreboard(score, id, name);
+        scoreboard(score, player_id, name);
+
+        // print card
 
         // read input
         flushinp();
