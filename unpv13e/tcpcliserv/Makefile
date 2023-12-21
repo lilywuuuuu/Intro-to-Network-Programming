@@ -3,41 +3,32 @@ include ../Make.defines
 PROGS =	tcpcli01 tcpcli04 tcpcli05 tcpcli06 \
 		tcpcli07 tcpcli08 tcpcli09 tcpcli10 \
 		tcpserv01 tcpserv02 tcpserv03 tcpserv04 \
-		tcpserv08 tcpserv09 tcpservselect01 tcpservpoll01 tsigpipe \
-		hw1cli hw1serv hw2cli hw2serv hw3cli hw3serv hw4cli hw4serv
+		tcpserv08 tcpserv09 tcpservselect01 tcpservpoll01 tsigpipe\
+		test_server hw1serv23 hw3cli23 hw3serv hw4cli23 hw2serv23 tcp 111550125_黃仁駿_lab4 tcpservpo1101 tsigpipe\ 
 
 all:	${PROGS}
-
-hw1cli: 	hw1cli.o
-		${CC} ${CFLAGS} -o $@ hw1cli.o ${LIBS}
-
-hw1serv: 	hw1serv.o
-		${CC} ${CFLAGS} -o $@ hw1serv.o ${LIBS}
-
-hw2cli: 	hw2cli.o
-		${CC} ${CFLAGS} -o $@ hw2cli.o ${LIBS}
-
-hw2serv: 	hw2serv.o
-		${CC} ${CFLAGS} -o $@ hw2serv.o ${LIBS}
-
-hw3cli: 	hw3cli.o
-		${CC} ${CFLAGS} -o $@ hw3cli.o ${LIBS}
-
-hw3serv: 	hw3serv.o
+finalcli:finalcli.o
+		${CC} ${CFLAGS} -o $@ finalcli.o ${LIBS}
+final_serv:final_serv.o
+		${CC} ${CFLAGS} -o $@ final_serv.o ${LIBS}
+test_server:	test_server.o
+		${CC} ${CFLAGS} -o $@ test_server.o ${LIBS}
+111550125_黃仁駿_lab4: 111550125_黃仁駿_lab4.o
+		${CC} ${CFLAGS} -o $@ 111550125_黃仁駿_lab4.o ${LIBS}
+hw4cli23:	hw4cli23.o
+		${CC} ${CFLAGS} -o $@ hw4cli23.o ${LIBS}
+hw3serv:	hw3serv.o
 		${CC} ${CFLAGS} -o $@ hw3serv.o ${LIBS}
-
-hw4cli: 	hw4cli.o
-		${CC} ${CFLAGS} -o $@ hw4cli.o ${LIBS}
-
-hw4serv: 	hw4serv.o
-		${CC} ${CFLAGS} -o $@ hw4serv.o ${LIBS}
-
-hw5cli: 	hw5cli.o
-		${CC} ${CFLAGS} -o $@ hw5cli.o ${LIBS}
-
-hw5serv: 	hw5serv.o
-		${CC} ${CFLAGS} -o $@ hw5serv.o ${LIBS}
-
+hw3cli23:	hw3cli23.o
+		${CC} ${CFLAGS} -o $@ hw3cli23.o ${LIBS}
+hw1serv23:	hw1serv23.o
+		${CC} ${CFLAGS} -o $@ hw1serv23.o ${LIBS}
+hw2serv23:	hw2serv23.o
+		${CC} ${CFLAGS} -o $@ hw2serv23.o ${LIBS}	
+tcpcli01_copy:	tcpcli01_copy.o
+		${CC} ${CFLAGS} -o $@ tcpcli01_copy.o ${LIBS}
+tcpcli01_copy2:	tcpcli01_copy2.o
+		${CC} ${CFLAGS} -o $@ tcpcli01_copy2.o ${LIBS}
 tcpcli01:	tcpcli01.o
 		${CC} ${CFLAGS} -o $@ tcpcli01.o ${LIBS}
 
