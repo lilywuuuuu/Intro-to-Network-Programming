@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
     int maxfdp1, stdineof, peer_exit, n, id;
     fd_set rset;
     char readbuffer[MAXLINE], recvline[MAXLINE];
-    char name[MAXLINE];
+    char username[MAXLINE];
     FILE *fp = stdin;
 
     // initialize connection
@@ -55,9 +55,9 @@ int main(int argc, char **argv) {
     signal(SIGALRM, handle_alarm);
 
     // welcome message
-    snprintf(name, MAXLINE, "%s\n", argv[2]);
-    Writen(sockfd, name, strlen(name));  // name
-    printf("Welcome to Slapjack, %s!\n", name);
+    snprintf(username, MAXLINE, "%s\n", argv[2]);
+    Writen(sockfd, username, strlen(username));  // name
+    printf("Welcome to Slapjack, %s!\n", username);
     readline(sockfd, id, MAXLINE);  // id
     printf("Your ID is %d.\n", id);
     printf("Please wait for the server to put you in a room...\n");
@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
     cbreak();               // Line buffering disabled, pass characters immediately
     noecho();               // Don't echo characters to the screen
     keypad(stdscr, TRUE);   // Enable the keypad for special keys
-    nodelay(stdscr, TRUE);  // Don't wait for input
+    // nodelay(stdscr, TRUE);  // Don't wait for input
 
     int sock_flags = fcntl(sockfd, F_GETFL, 0);
     int card_num = 0, round = 0; 
@@ -135,15 +135,18 @@ int main(int argc, char **argv) {
 
     char ch;
     while (1) {      // Exit loop on 'q' keypress
-        move(0, 0);  // move the cursor to the beginning of the line
-
         // flipper?
         readline(sockfd, recvline, MAXLINE);
         if (recvline == "flip\n") {  // your turn
+            move(10, 0);
+            printw("It's your turn! Press any key to flip a card.\n");
             alarm(5);
             // read input
+            flushinp();
             ch = getch();
             if (ch == 'q') {
+                refresh();
+                move(0, 0);
                 printw("bye!\n");
                 break;
             } else {
@@ -160,9 +163,11 @@ int main(int argc, char **argv) {
                &score[0], &score[1], &score[2], &score[3]);
 
         // print scoreboard
+        move(0, 0);
         scoreboard(score, id, name);
 
         // read input
+        flushinp();
         ch = getch();
         if (ch == 'q') {
             printw("bye!\n");
