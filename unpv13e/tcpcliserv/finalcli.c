@@ -3,8 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <signal.h>
+#include <unistd.h>
 
 #include "unp.h"
+
+void handle_alarm(int sig, int sockfd){
+    return;
+}
 
 void line() {
     printw("=====================================================================================\n");
@@ -42,13 +48,14 @@ int main(int argc, char **argv) {
 
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(SERV_PORT + 3);
+    servaddr.sin_port = htons(SERV_PORT);
     Inet_pton(AF_INET, argv[1], &servaddr.sin_addr);
-    strcpy(name, argv[2]);
+    // strcpy(name, argv[2]);
     Connect(sockfd, (SA *)&servaddr, sizeof(servaddr));
+    signal(SIGALRM, handle_alarm);
 
     // welcome message
-    snprintf(name, MAXLINE, "%s\n", name);
+    snprintf(name, MAXLINE, "%s\n", argv[2]);
     Writen(sockfd, name, strlen(name));  // name
     printf("Welcome to Slapjack, %s!\n", name);
     readline(sockfd, id, MAXLINE);  // id
@@ -112,13 +119,17 @@ int main(int argc, char **argv) {
     }
 
     // game starts
-    initscr();             // Initialize ncurses
-    cbreak();              // Line buffering disabled, pass characters immediately
-    noecho();              // Don't echo characters to the screen
-    keypad(stdscr, TRUE);  // Enable the keypad for special keys
-    nodelay(stdscr, TRUE); // Don't wait for input
+    initscr();              // Initialize ncurses
+    cbreak();               // Line buffering disabled, pass characters immediately
+    noecho();               // Don't echo characters to the screen
+    keypad(stdscr, TRUE);   // Enable the keypad for special keys
+    nodelay(stdscr, TRUE);  // Don't wait for input
 
     int sock_flags = fcntl(sockfd, F_GETFL, 0);
+    int card_num = 0, round = 0; 
+    int score[5] = {0, 0, 0, 0};
+    int player_id[5] = {0, 0, 0, 0};
+    char name[5][15] = {"", "", "", ""};
 
     // fcntl(sockfd, F_SETFL, O_NONBLOCK);  // set socket to non-blocking
 
@@ -128,34 +139,26 @@ int main(int argc, char **argv) {
 
         // flipper?
         readline(sockfd, recvline, MAXLINE);
-        if (recvline != NULL){
-            if (recvline == "flip\n"){ // your turn 
-                // read input
-                ch = getch();
-                if (ch == 'q') {
-                    printw("bye!\n");
-                    break;
-                } else if (ch == '\n')
-                    printw("you pressed enter!\n");
-                else if (ch == ' ')
-                    printw("you pressed space!\n");
-                else{
-                    if (ch == '\n') printw("you pressed enter!\n");
-                    else if (ch == ' ') printw("you pressed space!\n");
-                    else printw("you pressed %c!\n", ch);
-                    Writen(sockfd, "flip\n", 5);
-                }
-            }
-            else {
-
+        if (recvline == "flip\n") {  // your turn
+            alarm(5);
+            // read input
+            ch = getch();
+            if (ch == 'q') {
+                printw("bye!\n");
+                break;
+            } else {
+                Writen(sockfd, "flip\n", 5);
             }
         }
 
         // update scoreboard from server and get card number (readline)
-        int score[5] = {10, 3, 8, 1};
-        int id[5] = {9, 5, 3, 1};
-        char name[5][15] = {"Bartholomew", "Lily", "Johnathan", "Mary"};
-        
+        readline(sockfd, recvline, MAXLINE);
+        sscanf(recvline, "%d %d %s %s %s %s %d %d %d %d %d %d %d %d", 
+               &card_num, &round, 
+               name[0], name[1], name[2], name[3], 
+               &player_id[0], &player_id[1], &player_id[2], &player_id[3],
+               &score[0], &score[1], &score[2], &score[3]);
+
         // print scoreboard
         scoreboard(score, id, name);
 
