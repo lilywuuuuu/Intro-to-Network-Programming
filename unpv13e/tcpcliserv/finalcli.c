@@ -1,14 +1,14 @@
 #include <arpa/inet.h>
 #include <ncurses.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <signal.h>
 #include <unistd.h>
 
 #include "unp.h"
 
-void handle_alarm(int sig){
+void handle_alarm(int sig) {
     return;
 }
 
@@ -100,17 +100,17 @@ int main(int argc, char **argv) {
                     return 0;  // disconnect
                 } else if (strcmp(recvline, "waiting\n") == 0) {
                     printf("You are in a room! Please wait for the game to start.\n");
-                } else if (strcmp(recvline, "1\n") == 0){
+                } else if (strcmp(recvline, "1\n") == 0) {
                     printf("The room currently has 1 player...\n");
-                } else if (strcmp(recvline, "2\n") == 0){
+                } else if (strcmp(recvline, "2\n") == 0) {
                     printf("The room currently has 2 players...\n");
-                } else if (strcmp(recvline, "3\n") == 0){
+                } else if (strcmp(recvline, "3\n") == 0) {
                     printf("The room currently has 3 players...\n");
-                } else if (strcmp(recvline, "4\n") == 0){
+                } else if (strcmp(recvline, "4\n") == 0) {
                     printf("The room currently has 4 players...\n");
                     printf("Game is starting!\n");
                     break;
-                } 
+                }
             }
         }
         if (FD_ISSET(fileno(fp), &rset)) {  // input is readable
@@ -128,33 +128,33 @@ int main(int argc, char **argv) {
     }
 
     // game starts
-    initscr();              // Initialize ncurses
-    cbreak();               // Line buffering disabled, pass characters immediately
-    noecho();               // Don't echo characters to the screen
-    keypad(stdscr, TRUE);   // Enable the keypad for special keys
+    initscr();             // Initialize ncurses
+    cbreak();              // Line buffering disabled, pass characters immediately
+    noecho();              // Don't echo characters to the screen
+    keypad(stdscr, TRUE);  // Enable the keypad for special keys
     // nodelay(stdscr, TRUE);  // Don't wait for input
 
     // int sock_flags = fcntl(sockfd, F_GETFL, 0);
-    int card_num = 0, round = 0; 
+    int card_num = 0, round = 0;
     int score[5] = {0, 0, 0, 0};
     int player_id[5] = {0, 0, 0, 0};
     char name[5][15] = {"", "", "", ""};
 
     // initialize scoreboard
     readline(sockfd, recvline, MAXLINE);
-    sscanf(recvline, "%s %s %s %s %d %d %d %d", 
-            name[0], name[1], name[2], name[3], 
-            &player_id[0], &player_id[1], &player_id[2], &player_id[3]);
+    sscanf(recvline, "%s %s %s %s %d %d %d %d",
+           name[0], name[1], name[2], name[3],
+           &player_id[0], &player_id[1], &player_id[2], &player_id[3]);
     move(0, 0);
     scoreboard(score, player_id, name);
 
     // fcntl(sockfd, F_SETFL, O_NONBLOCK);  // set socket to non-blocking
 
     char ch;
-    while (1) {      // Exit loop on 'q' keypress
+    while (1) {  // Exit loop on 'q' keypress
         // flipper?
         readline(sockfd, recvline, MAXLINE);
-        if (strcmp(recvline, "flip\n") == 0 ) {  // your turn
+        if (strcmp(recvline, "flip\n") == 0) {  // your turn
             move(15, 0);
             printw("It's your turn! Press any key to flip a card.\n");
             alarm(5);
@@ -173,9 +173,9 @@ int main(int argc, char **argv) {
 
         // update scoreboard from server and get card number (readline)
         readline(sockfd, recvline, MAXLINE);
-        sscanf(recvline, "%d %d %s %s %s %s %d %d %d %d %d %d %d %d", 
-               &card_num, &round, 
-               name[0], name[1], name[2], name[3], 
+        sscanf(recvline, "%d %d %s %s %s %s %d %d %d %d %d %d %d %d",
+               &card_num, &round,
+               name[0], name[1], name[2], name[3],
                &player_id[0], &player_id[1], &player_id[2], &player_id[3],
                &score[0], &score[1], &score[2], &score[3]);
 
