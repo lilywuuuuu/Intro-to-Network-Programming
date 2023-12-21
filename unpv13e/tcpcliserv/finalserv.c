@@ -18,7 +18,7 @@ const char kick[] = "You won\n";
 int participant[16];
 int id[16];
 char name[16][len_name];
-void *doit(void *);
+void *room1(void *);
 const char start[] = "start\n";
 const char no_one[] = "no\n";
 const char nobody[] = "empty\n";
@@ -49,7 +49,8 @@ int main(int argc, char **argv)
 	{
 		participant[i] = -1;
 	}
-	// Pthread_create(&tidA, NULL, &doit, NULL);
+	Pthread_create(&tidA, NULL, &room1, NULL);
+	sleep(1);
 	// Pthread_create(&tidB, NULL, &doit, NULL);
 	for (;;)
 	{
