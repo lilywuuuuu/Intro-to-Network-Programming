@@ -10,7 +10,7 @@
 
 CC = gcc 
 CFLAGS = -I../lib -g -O2 -D_REENTRANT -Wall
-LIBS = ../libunp.a -lresolv -lpthread
+LIBS = ../libunp.a -lresolv -lpthread -lncurses
 LIBS_XTI = ../libunpxti.a ../libunp.a -lresolv -lpthread
 RANLIB = ranlib
 
