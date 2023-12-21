@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
         // flipper?
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "flip\n") == 0 ) {  // your turn
-            move(10, 0);
+            move(15, 0);
             printw("It's your turn! Press any key to flip a card.\n");
             alarm(5);
             // read input
