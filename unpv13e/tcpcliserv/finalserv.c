@@ -185,7 +185,7 @@ room1(void *vptr)
 			if (maxfdp1 == -1)
 			{
 				Pthread_mutex_unlock(&mutex1);
-				sleep(2);
+				sleep(5);
 			}
 			else
 			{
@@ -194,21 +194,39 @@ room1(void *vptr)
 				Select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
-					if (participant[i] != -1 && FD_ISSET(participant[i], &fd))
+					if (participant[i] != -1)
+						;
 					{
-						participant[i] = -1;
-						people--;
+						if (FD_ISSET(participant[i], &fd))
+						{
+							participant[i] = -1;
+							people--;
+						}
+						else
+						{
+							char how_many[10];
+							sprintf(how_many, "%d\n", people);
+							writen(participant[i], how_many, strlen(how_many));
+						}
 					}
 				}
 
 				Pthread_mutex_unlock(&mutex1);
 				if (people == 4)
 				{
+
+					// card_num round name id score
+					char st[200];
+					sprintf("%s %s %s %s %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3]);
+					for (int i = ROOM; i < ROOM + 4; i++)
+					{
+						writen(participant[i], st, strlen(st));
+					}
 					break;
 				}
 				else
 				{
-					sleep(2);
+					sleep(5);
 				}
 			}
 		}
