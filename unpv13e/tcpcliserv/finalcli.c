@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     struct sockaddr_in servaddr;
     int maxfdp1, stdineof, peer_exit, n, id;
     fd_set rset;
-    char readbuffer[MAXLINE], recvline[MAXLINE];
+    char readbuffer[MAXLINE], recvline[MAXLINE], sendline[MAXLINE];
     char username[MAXLINE];
     FILE *fp = stdin;
 
@@ -55,8 +55,9 @@ int main(int argc, char **argv) {
     signal(SIGALRM, handle_alarm);
 
     // welcome message
-    snprintf(username, MAXLINE, "%s\n", argv[2]);
-    Writen(sockfd, username, strlen(username));  // name
+    snprintf(username, MAXLINE, "%s", argv[2]);
+    snprintf(sendline, MAXLINE, "%s\n", username);
+    Writen(sockfd, sendline, strlen(sendline));  // name
     printf("Welcome to Slapjack, %s!\n", username);
     readline(sockfd, recvline, MAXLINE);  // id
     sscanf(recvline, "%d", &id);
@@ -99,10 +100,17 @@ int main(int argc, char **argv) {
                     return 0;  // disconnect
                 } else if (strcmp(recvline, "waiting\n") == 0) {
                     printf("You are in a room! Please wait for the game to start.\n");
-                } else if (strcmp(recvline, "start\n") == 0) {
+                } else if (strcmp(recvline, "1\n") == 0){
+                    printf("The room currently has 1 player...\n");
+                } else if (strcmp(recvline, "2\n") == 0){
+                    printf("The room currently has 2 players...\n");
+                } else if (strcmp(recvline, "3\n") == 0){
+                    printf("The room currently has 3 players...\n");
+                } else if (strcmp(recvline, "4\n") == 0){
+                    printf("The room currently has 4 players...\n");
                     printf("Game is starting!\n");
                     break;
-                }
+                } 
             }
         }
         if (FD_ISSET(fileno(fp), &rset)) {  // input is readable
@@ -131,6 +139,14 @@ int main(int argc, char **argv) {
     int score[5] = {0, 0, 0, 0};
     int player_id[5] = {0, 0, 0, 0};
     char name[5][15] = {"", "", "", ""};
+
+    // initialize scoreboard
+    readline(sockfd, recvline, MAXLINE);
+    sscanf(recvline, "%s %s %s %s %d %d %d %d", 
+            name[0], name[1], name[2], name[3], 
+            &player_id[0], &player_id[1], &player_id[2], &player_id[3]);
+    move(0, 0);
+    scoreboard(score, player_id, name);
 
     // fcntl(sockfd, F_SETFL, O_NONBLOCK);  // set socket to non-blocking
 
