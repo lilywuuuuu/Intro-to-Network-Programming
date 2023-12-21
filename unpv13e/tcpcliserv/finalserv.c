@@ -139,10 +139,10 @@ room1(void *vptr)
 {
 	const int ROOM = 0;
 	fd_set fd;
-	const your_turn[] = "flip\n";
-	const not_your_turn[] = "don't_flip\n";
+	const char your_turn[] = "flip\n";
+	const char not_your_turn[] = "don't_flip\n";
 	char user_time[100], mes[100];
-	int maxfdp1, flag = 0, people = 0, score[4] = 0, num_ans, k, cards = 0, turn = 0, answer = 0, color, quit;
+	int maxfdp1, flag = 0, people = 0, score[4] = {0}, num_ans, k, cards = 0, turn = 0, answer = 0, color, quit;
 	double tmp_f;
 	int who_quit[4];
 	struct timeval tv, timeout;
