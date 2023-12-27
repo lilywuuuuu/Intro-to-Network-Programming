@@ -126,7 +126,6 @@ int main(int argc, char **argv) {
     init_pair(3,COLOR_BLACK,COLOR_BLACK);
     // nodelay(stdscr, TRUE);  // Don't wait for input
 
-    // int sock_flags = fcntl(sockfd, F_GETFL, 0);
     int card_num = 0, pattern = 0, round = 0;
     int score[5] = {0, 0, 0, 0};
     int player_id[5] = {0, 0, 0, 0};
@@ -145,7 +144,9 @@ int main(int argc, char **argv) {
     move(0, 0);
     scoreboard(score, player_id, name);
 
-    // fcntl(sockfd, F_SETFL, O_NONBLOCK);  // set socket to non-blocking
+    // make sure readline is blocking
+    int sock_flags = fcntl(sockfd, F_GETFL, 0);
+    fcntl(sockfd, F_SETFL, sock_flags & ~O_NONBLOCK);  // set socket to blocking
 
     char ch;
     while (1) {  // Exit loop on 'q' keypress
@@ -155,6 +156,9 @@ int main(int argc, char **argv) {
             move(11, 0);
             printw("It's your turn! \nPress any key to flip a card.\n");
             alarm(3);
+            attron(COLOR_PAIR(2));
+            card();
+            attroff(COLOR_PAIR(2));
             // read input
             flushinp();
             ch = getch();
@@ -171,6 +175,8 @@ int main(int argc, char **argv) {
         // get card number and round number from server
         readline(sockfd, recvline, MAXLINE);
         sscanf(recvline, "%d %d %d", &card_num, &pattern, &round);
+        move(20, 2);
+        printw("%s", recvline);
 
         // print card
         WINDOW *cardwin=newwin(17,49,1,40);
@@ -192,6 +198,7 @@ int main(int argc, char **argv) {
             printw("bye!\n");
             break;
         } else {
+            move(20, 2);
             if (ch == '\n')
                 printw("you pressed enter!\n");
             else if (ch == ' ')
@@ -221,6 +228,8 @@ int main(int argc, char **argv) {
                &score[0], &score[1], &score[2], &score[3]);
         move(0, 0);
         scoreboard(score, player_id, name);
+        move(20, 2);
+        printw("%s", recvline);
 
         // check if game is over
         readline(sockfd, recvline, MAXLINE);
@@ -598,45 +607,45 @@ void flip_card(WINDOW* cardwin){
     wattron(cardwin,COLOR_PAIR(2));
     attron(COLOR_PAIR(4));
     for(int y=1;y<=16;y=y+3){
-        mvwprintw(cardwin,0, y,"|-----------------------|");
-        mvwprintw(cardwin,1, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,2, y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,3, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,4, y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,5, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,6, y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,7, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,8, y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,9, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,10,y,"|* * * * * * * * * * *  |");
-        mvwprintw(cardwin,11,y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,12,y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,13,y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,14,y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,15,y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,16,y,"|-----------------------|");
+        mvwprintw(cardwin,0, y,"|----------------------|");
+        mvwprintw(cardwin,1, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,2, y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,3, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,4, y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,5, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,6, y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,7, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,8, y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,9, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,10,y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,11,y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,12,y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,13,y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,14,y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,15,y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,16,y,"|----------------------|");
         wrefresh(cardwin);
         usleep(80000);
         wclear(cardwin);
     }
     for(int y=16;y>=1;y=y-3){
-        mvwprintw(cardwin,0, y,"|-----------------------|");
-        mvwprintw(cardwin,1, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,2, y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,3, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,4, y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,5, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,6, y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,7, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,8, y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,9, y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,10,y,"|* * * * * * * * * * *  |");
-        mvwprintw(cardwin,11,y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,12,y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,13,y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,14,y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,15,y,"| * * * * * * * * * * * |");
-        mvwprintw(cardwin,16,y,"|-----------------------|");
+        mvwprintw(cardwin,0, y,"|----------------------|");
+        mvwprintw(cardwin,1, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,2, y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,3, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,4, y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,5, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,6, y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,7, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,8, y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,9, y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,10,y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,11,y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,12,y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,13,y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,14,y,"|* * * * * * * * * * * |");
+        mvwprintw(cardwin,15,y,"| * * * * * * * * * * *|");
+        mvwprintw(cardwin,16,y,"|----------------------|");
         wrefresh(cardwin);
         usleep(20000);
         wclear(cardwin);
