@@ -10,10 +10,9 @@
 #define ROOM3 8
 #define ROOM4 12
 // int a;
-pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
+int sep_room[4];
+pthread_mutex_t mutex[4];
+
 const char kick[200] = "You won\n";
 int participant[16];
 int id[16];
@@ -24,6 +23,15 @@ const char no_one[200] = "no\n";
 const char nobody[200] = "empty\n";
 int main(int argc, char **argv)
 {
+	for (int i = 0; i < 4; i++)
+	{
+		sep_room[i] = i * 4;
+		for (int i = 0; i < 4; i++)
+		{
+			sep_room[i] = i * 4;
+			pthread_mutex_init(&mutex[i], NULL);
+		}
+	}
 	signal(SIGPIPE, SIG_IGN);
 	int counter = 1; /* incremented by threads */
 	srand(time(NULL));
@@ -45,13 +53,18 @@ int main(int argc, char **argv)
 
 	Listen(listenfd, LISTENQ);
 
-	pthread_t tidA, tidB;
+	pthread_t tid[4];
 	char how_many[MAXLINE] = "";
 	for (int i = 0; i < 16; i++)
 	{
 		participant[i] = -1;
 	}
-	Pthread_create(&tidA, NULL, &room1, NULL);
+	for (int i = 0; i < 4; i++)
+	{
+		int ttt = i;
+		Pthread_create(&(tid[i]), NULL, &room1, (void *)(long)(ttt));
+	}
+
 	sleep(1);
 	// Pthread_create(&tidB, NULL, &doit, NULL);
 	for (;;)
@@ -75,7 +88,7 @@ int main(int argc, char **argv)
 			continue;
 		}
 
-		Pthread_mutex_lock(&mutex1);
+		Pthread_mutex_lock(&(mutex[0]));
 
 		// writen(participant[i], how_many, strlen(how_many));
 		for (int i = ROOM1; i < ROOM1 + 4; i++)
@@ -94,10 +107,10 @@ int main(int argc, char **argv)
 				break;
 			}
 		}
-		Pthread_mutex_unlock(&mutex1);
+		Pthread_mutex_unlock(&(mutex[0]));
 		if (flag == 0)
 		{
-			Pthread_mutex_lock(&mutex2);
+			Pthread_mutex_lock(&(mutex[1]));
 
 			for (int i = ROOM2; i < ROOM2 + 4; i++)
 			{
@@ -112,11 +125,11 @@ int main(int argc, char **argv)
 					break;
 				}
 			}
-			Pthread_mutex_unlock(&mutex2);
+			Pthread_mutex_unlock(&(mutex[1]));
 		}
 		if (flag == 0)
 		{
-			Pthread_mutex_lock(&mutex3);
+			Pthread_mutex_lock(&(mutex[2]));
 			for (int i = ROOM3; i < ROOM3 + 4; i++)
 			{
 				if (participant[i] == -1)
@@ -130,11 +143,11 @@ int main(int argc, char **argv)
 					break;
 				}
 			}
-			Pthread_mutex_unlock(&mutex3);
+			Pthread_mutex_unlock(&(mutex[2]));
 		}
 		if (flag == 0)
 		{
-			Pthread_mutex_lock(&mutex4);
+			Pthread_mutex_lock(&(mutex[3]));
 			for (int i = ROOM4; i < ROOM4 + 4; i++)
 			{
 				if (participant[i] == -1)
@@ -148,7 +161,7 @@ int main(int argc, char **argv)
 					break;
 				}
 			}
-			Pthread_mutex_unlock(&mutex4);
+			Pthread_mutex_unlock(&(mutex[3]));
 		}
 		if (flag == 0)
 		{
@@ -166,7 +179,9 @@ int main(int argc, char **argv)
 void *
 room1(void *vptr)
 {
-	const int ROOM = 0;
+	int room_num = (int)(long)vptr;
+	const int ROOM = sep_room[room_num];
+
 	fd_set fd;
 	const char your_turn[200] = "flip\n";
 	const char not_your_turn[200] = "don't_flip\n";
@@ -198,7 +213,7 @@ room1(void *vptr)
 			maxfdp1 = -1;
 			people = 0;
 			// flag = 0;
-			Pthread_mutex_lock(&mutex1);
+			Pthread_mutex_lock(&(mutex[room_num]));
 
 			for (int i = ROOM; i < ROOM + 4; i++)
 			{
@@ -212,7 +227,7 @@ room1(void *vptr)
 
 			if (maxfdp1 == -1)
 			{
-				Pthread_mutex_unlock(&mutex1);
+				Pthread_mutex_unlock(&(mutex[room_num]));
 				sleep(5);
 			}
 			else
@@ -245,7 +260,7 @@ room1(void *vptr)
 					}
 				}
 
-				Pthread_mutex_unlock(&mutex1);
+				Pthread_mutex_unlock(&(mutex[room_num]));
 				if (people == 4)
 				{
 					const char four[200] = "4\n";
@@ -294,7 +309,7 @@ room1(void *vptr)
 
 			int pre_turn = turn;
 			maxfdp1 = -1;
-			Pthread_mutex_lock(&mutex1);
+			Pthread_mutex_lock(&(mutex[room_num]));
 
 			for (k = 1; k < 4; k++)
 			{
@@ -310,7 +325,7 @@ room1(void *vptr)
 
 			if (maxfdp1 == -1)
 			{
-				Pthread_mutex_unlock(&mutex1);
+				Pthread_mutex_unlock(&(mutex[room_num]));
 				goto re;
 			}
 
@@ -337,13 +352,17 @@ room1(void *vptr)
 			timeout.tv_sec = 3;
 			timeout.tv_usec = 0;
 			num_ans = select(participant[ROOM + turn] + 1, &fd, NULL, NULL, &timeout);
+			if (readline(participant[ROOM + turn], user_time, strlen(user_time)) <= 0)
+			{
+				;
+			}
 			maxfdp1 = -1;
 			sprintf(mes, "%d %d %d\n", cards, color, answer);
 			for (int i = ROOM; i < ROOM + 4; i++)
 			{
 				if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 				{
-					if (writen(participant[ROOM + i], mes, strlen(mes)) <= 0)
+					if (writen(participant[i], mes, strlen(mes)) <= 0)
 					{
 						who_quit[i - ROOM] = 1;
 						++quit;
@@ -488,7 +507,7 @@ room1(void *vptr)
 					{
 						participant[i] = -1;
 					}
-					Pthread_mutex_unlock(&mutex1);
+					Pthread_mutex_unlock(&(mutex[room_num]));
 					goto re;
 				}
 				else if (win == 1)
@@ -509,7 +528,7 @@ room1(void *vptr)
 					{
 						participant[i] = -1;
 					}
-					Pthread_mutex_unlock(&mutex1);
+					Pthread_mutex_unlock(&(mutex[room_num]));
 					goto re;
 				}
 				else
@@ -523,12 +542,11 @@ room1(void *vptr)
 							participant[i] = -1;
 							id[i] = 0;
 							sprintf(name[i], "-");
-							++quit;
 						}
 					}
 				}
 			}
-			Pthread_mutex_unlock(&mutex1);
+			Pthread_mutex_unlock(&(mutex[room_num]));
 		}
 	}
 
