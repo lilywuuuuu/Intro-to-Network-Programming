@@ -199,7 +199,7 @@ room1(void *vptr)
 	{
 	re:
 		cards = 1;
-		answer = 1;
+		answer = 0;
 		turn = 0;
 
 		for (int i = 0; i < 4; i++)
@@ -283,6 +283,7 @@ room1(void *vptr)
 							people--;
 						}
 					}
+					sleep(5);
 					break;
 				}
 				else
@@ -388,50 +389,39 @@ room1(void *vptr)
 			num_ans = select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
 			if (answer == cards)
 			{
-				if (num_ans == 0)
+				if (num_ans != 0)
 				{
+					double time = 100000;
+					quit = 0;
+					who = -1;
 					for (int i = ROOM; i < ROOM + 4; i++)
 					{
-						if (participant[i] != -1 && who_quit[i - ROOM] != 1)
+						if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
 						{
-							if (writen(participant[i], no_one, strlen(no_one)) <= 0)
+							if (readline(participant[i], user_time, strlen(user_time)) <= 0)
 							{
 								who_quit[i - ROOM] = 1;
 								quit++;
 							}
-							// score?
-						}
-					}
-				}
-				double time = 100000;
-				quit = 0;
-
-				for (int i = ROOM; i < ROOM + 4; i++)
-				{
-					if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
-					{
-						if (readline(participant[i], user_time, strlen(user_time)) <= 0)
-						{
-							who_quit[i - ROOM] = 1;
-							quit++;
-						}
-						else
-						{
-							sscanf(user_time, "%lf", &tmp_f);
-							if (tmp_f < time)
+							else
 							{
-								who = i;
+								sscanf(user_time, "%lf", &tmp_f);
+								if (tmp_f < time)
+								{
+									time = tmp_f;
+									who = i;
+								}
 							}
 						}
 					}
-				}
 
-				if (who != -1)
-				{
-					score[who - ROOM]++;
-					if (score[who - ROOM] >= 10)
+					if (who != -1)
 					{
-						win = 1;
+						score[who - ROOM]++;
+						if (score[who - ROOM] >= 10)
+						{
+							win = 1;
+						}
 					}
 				}
 			}
