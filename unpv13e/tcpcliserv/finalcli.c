@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
 
         // get card number and round number from server
         readline(sockfd, recvline, MAXLINE);
-        sscanf(recvline, "%d %d", &card_num, &round);
+        sscanf(recvline, "%d %d %d", &card_num, &pattern, &round);
 
         // print card
         WINDOW *cardwin=newwin(17,48,1,40);
