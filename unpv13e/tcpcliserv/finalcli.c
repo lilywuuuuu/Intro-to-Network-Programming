@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "flip\n") == 0) {  // your turn
             move(11, 0);
-            printw("It's your turn! Press any key to flip a card.\n");
+            printw("It's your turn! \nPress any key to flip a card.\n");
             alarm(3);
             // read input
             flushinp();
@@ -173,12 +173,12 @@ int main(int argc, char **argv) {
         sscanf(recvline, "%d %d %d", &card_num, &pattern, &round);
 
         // print card
-        WINDOW *cardwin=newwin(17,48,1,40);
-        attron(COLOR_PAIR(2));
-        move(12,2);
-        printw("Counter:");
-        counter(round);
+        WINDOW *cardwin=newwin(17,49,1,40);
         flip_card(cardwin);
+        move(13,2);
+        printw("Counter:");
+        attron(COLOR_PAIR(2));
+        counter(round);
         show_card(pattern, card_num);
         attroff(COLOR_PAIR(2));
         gettimeofday(&start, NULL);
@@ -322,107 +322,107 @@ void draw(int mousex, int mousey, int blank){
 }
 void counter(int num){
     if(num==1){
-        draw(14-1,4+7,7);
-        draw(15-1,3+7,2);
-        draw(15-1,10+7,2);
-        draw(16-1,3+7,9);
-        draw(17-1,3+7,2);
-        draw(17-1,10+7,2);
-        draw(18-1,3+7,2);
-        draw(18-1,10+7,2);
+        draw(14,4+7,7);
+        draw(15,3+7,2);
+        draw(15,10+7,2);
+        draw(16,3+7,9);
+        draw(17,3+7,2);
+        draw(17,10+7,2);
+        draw(18,3+7,2);
+        draw(18,10+7,2);
     }else if(num==2){
-        draw(2+11,41-31,9);
-        draw(3+11,48-31,2);
-        draw(4+11,41-31,9);
-        draw(5+11,41-31,2);
-        draw(6+11,41-31,9);
+        draw(2+12,41-31,9);
+        draw(3+12,48-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,41-31,2);
+        draw(6+12,41-31,9);
     }else if(num==3){
-        draw(2+11,41-31,9);
-        draw(3+11,48-31,2);
-        draw(4+11,41-31,9);
-        draw(5+11,48-31,2);
-        draw(6+11,41-31,9);
+        draw(2+12,41-31,9);
+        draw(3+12,48-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,48-31,2);
+        draw(6+12,41-31,9);
     }else if(num==4){
-        draw(2+11,41-31,2);
-        draw(2+11,46-31,2);
-        draw(3+11,41-31,2);
-        draw(3+11,46-31,2);
-        draw(4+11,41-31,9);
-        draw(5+11,46-31,2);
-        draw(6+11,46-31,2);
+        draw(2+12,41-31,2);
+        draw(2+12,46-31,2);
+        draw(3+12,41-31,2);
+        draw(3+12,46-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,46-31,2);
+        draw(6+12,46-31,2);
     }else if(num==5){
-        draw(2+11,41-31,9);
-        draw(3+11,41-31,2);
-        draw(4+11,41-31,9);
-        draw(5+11,48-31,2);
-        draw(6+11,41-31,9);
+        draw(2+12,41-31,9);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,48-31,2);
+        draw(6+12,41-31,9);
     }else if(num==6){
-        draw(2+11,41-31,9);
-        draw(3+11,41-31,2);
-        draw(4+11,41-31,9);
-        draw(5+11,41-31,2);
-        draw(5+11,48-31,2);
-        draw(6+11,41-31,9);
+        draw(2+12,41-31,9);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,41-31,2);
+        draw(5+12,48-31,2);
+        draw(6+12,41-31,9);
     }else if(num==7){
-        draw(2+11,41-31,9);
-        draw(3+11,47-31,2);
-        draw(4+11,46-31,2);
-        draw(5+11,45-31,2);
-        draw(6+11,45-31,2);
+        draw(2+12,41-31,9);
+        draw(3+12,47-31,2);
+        draw(4+12,46-31,2);
+        draw(5+12,45-31,2);
+        draw(6+12,45-31,2);
     }else if(num==8){
-        draw(2+11,42-31,7);
-        draw(3+11,41-31,2);
-        draw(3+11,48-31,2);
-        draw(4+11,42-31,7);
-        draw(5+11,41-31,2);
-        draw(5+11,48-31,2);
-        draw(6+11,42-31,7);
+        draw(2+12,42-31,7);
+        draw(3+12,41-31,2);
+        draw(3+12,48-31,2);
+        draw(4+12,42-31,7);
+        draw(5+12,41-31,2);
+        draw(5+12,48-31,2);
+        draw(6+12,42-31,7);
     }else if(num==9){
-        draw(2+11,41-31,9);
-        draw(3+11,48-31,2);
-        draw(3+11,41-31,2);
-        draw(4+11,41-31,9);
-        draw(5+11,48-31,2);
-        draw(6+11,41-31,9);
+        draw(2+12,41-31,9);
+        draw(3+12,48-31,2);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,48-31,2);
+        draw(6+12,41-31,9);
     }else if(num==10){
-        draw(2+11,41-31,2);
-        draw(3+11,41-31,2);
-        draw(4+11,41-31,2);
-        draw(5+11,41-31,2);
-        draw(6+11,41-31,2);
-        draw(2+11,45-31,7);
-        draw(3+11,45-31,2);
-        draw(3+11,50-31,2);
-        draw(4+11,45-31,2);
-        draw(4+11,50-31,2);
-        draw(5+11,45-31,2);
-        draw(5+11,50-31,2);
-        draw(6+11,45-31,7);
+        draw(2+12,41-31,2);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,2);
+        draw(5+12,41-31,2);
+        draw(6+12,41-31,2);
+        draw(2+12,45-31,7);
+        draw(3+12,45-31,2);
+        draw(3+12,50-31,2);
+        draw(4+12,45-31,2);
+        draw(4+12,50-31,2);
+        draw(5+12,45-31,2);
+        draw(5+12,50-31,2);
+        draw(6+12,45-31,7);
     }else if(num==11){
-        draw(2+11,41-31,9);
-        draw(3+11,46-31,2);
-        draw(4+11,46-31,2);
-        draw(5+11,41-31,2);
-        draw(5+11,46-31,2);
-        draw(6+11,42-31,5);
+        draw(2+12,41-31,9);
+        draw(3+12,46-31,2);
+        draw(4+12,46-31,2);
+        draw(5+12,41-31,2);
+        draw(5+12,46-31,2);
+        draw(6+12,42-31,5);
     }else if(num==12){
-        draw(2+11,41-31,7);
-        draw(3+11,41-31,2);
-        draw(3+11,46-31,2);
-        draw(4+11,41-31,2);
-        draw(4+11,45-31,3);
-        draw(5+11,41-31,8);
-        draw(6+11,47-31,2);
-    }else if(num==13){
-        draw(2+11,41-31,2);
-        draw(2+11,47-31,2);
-        draw(3+11,41-31,2);
-        draw(3+11,45-31,3);
-        draw(4+11,41-31,5);
-        draw(5+11,41-31,2);
-        draw(5+11,45-31,3);
-        draw(6+11,41-31,2);
-        draw(6+11,47-31,2);
+        draw(2+12,41-31,7);
+        draw(3+12,41-31,2);
+        draw(3+12,46-31,2);
+        draw(4+12,41-31,2);
+        draw(4+12,45-31,3);
+        draw(5+12,41-31,8);
+        draw(6+12,47-31,2);
+    }else if(num==0){
+        draw(2+12,41-31,2);
+        draw(2+12,47-31,2);
+        draw(3+12,41-31,2);
+        draw(3+12,45-31,3);
+        draw(4+12,41-31,5);
+        draw(5+12,41-31,2);
+        draw(5+12,45-31,3);
+        draw(6+12,41-31,2);
+        draw(6+12,47-31,2);
     }
     move(20,0);
     return;
@@ -579,7 +579,7 @@ void show_card(int kind, int num){
         draw(4,45,3);
         draw(5,41,8);
         draw(6,47,2);
-    }else if(num==13){
+    }else if(num==0){
         draw(2,41,2);
         draw(2,47,2);
         draw(3,41,2);
