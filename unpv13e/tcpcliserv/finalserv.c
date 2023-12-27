@@ -9,6 +9,38 @@
 #define ROOM2 4
 #define ROOM3 8
 #define ROOM4 12
+ssize_t writ(int fd, const void *vptr, size_t n)
+{
+	size_t nleft = n;
+	ssize_t nwritten;
+	const char *ptr = vptr;
+
+	while (nleft > 0)
+	{
+		if ((nwritten = write(fd, ptr, nleft)) <= 0)
+		{
+			if (nwritten < 0 && (errno == EBADF || errno == EPIPE || errno == ENOTCONN))
+			{
+				// 忽略已关闭的套接字错误，直接返回
+				return -1;
+			}
+			else if (nwritten < 0 && errno == EINTR)
+			{
+				// 如果是因为信号中断导致的错误，则继续尝试写入
+				nwritten = 0;
+			}
+			else
+			{
+				// 对于其他错误，返回 -1
+				return -1;
+			}
+		}
+
+		nleft -= nwritten;
+		ptr += nwritten;
+	}
+	return n;
+}
 
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
@@ -65,18 +97,18 @@ int main(int argc, char **argv)
 		str[strlen(str) - 1] = '\0';
 		flag = 0;
 		sprintf(how_many, "%d\n", counter + 1);
-		if (writen(tmp, how_many, strlen(how_many)) <= 0)
+		if (writ(tmp, how_many, strlen(how_many)) <= 0)
 		{
 			continue;
 		}
-		if (writen(tmp, waiting, strlen(waiting)) <= 0)
+		if (writ(tmp, waiting, strlen(waiting)) <= 0)
 		{
 			continue;
 		}
 
 		Pthread_mutex_lock(&mutex1);
 
-		// writen(participant[i], how_many, strlen(how_many));
+		// writ(participant[i], how_many, strlen(how_many));
 		for (i = ROOM1; i < ROOM1 + 4; i++)
 		{
 			if (participant[i] == -1)
@@ -88,7 +120,7 @@ int main(int argc, char **argv)
 				// printf("OK\n");
 				sprintf(name[i], "%s", str);
 				// printf("OK\n");
-				// writen(participant[i], how_many, strlen(how_many));
+				// writ(participant[i], how_many, strlen(how_many));
 				// printf("OK\n");
 				break;
 			}
@@ -107,7 +139,7 @@ int main(int argc, char **argv)
 					id[i] = counter;
 					++counter;
 					sprintf(name[i], "%s", str);
-					// writen(participant[i], how_many, strlen(how_many));
+					// writ(participant[i], how_many, strlen(how_many));
 					break;
 				}
 			}
@@ -125,7 +157,7 @@ int main(int argc, char **argv)
 					id[i] = counter;
 					++counter;
 					sprintf(name[i], "%s", str);
-					// writen(participant[i], how_many, strlen(how_many));
+					// writ(participant[i], how_many, strlen(how_many));
 					break;
 				}
 			}
@@ -143,7 +175,7 @@ int main(int argc, char **argv)
 					id[i] = counter;
 					++counter;
 					sprintf(name[i], "%s", str);
-					// writen(participant[i], how_many, strlen(how_many));
+					// writ(participant[i], how_many, strlen(how_many));
 					break;
 				}
 			}
@@ -152,7 +184,7 @@ int main(int argc, char **argv)
 		if (flag == 0)
 		{
 			sprintf(how_many, "sorry\n");
-			writen(tmp, how_many, strlen(how_many));
+			writ(tmp, how_many, strlen(how_many));
 			close(tmp);
 		}
 	}
@@ -231,7 +263,7 @@ room1(void *vptr)
 							{
 								char how_many[200];
 								sprintf(how_many, "%d\n", people);
-								writen(participant[i], how_many, strlen(how_many));
+								writ(participant[i], how_many, strlen(how_many));
 							}
 						}
 					}
@@ -249,8 +281,8 @@ room1(void *vptr)
 					printf("%s\n", st);
 					for (int i = ROOM; i < ROOM + 4; i++)
 					{
-						writen(participant[i], four, strlen(four));
-						writen(participant[i], st, strlen(st));
+						writ(participant[i], four, strlen(four));
+						writ(participant[i], st, strlen(st));
 					}
 					break;
 				}
@@ -302,7 +334,7 @@ room1(void *vptr)
 			{
 				if (i - ROOM != turn && participant[i] != -1)
 				{
-					if (writen(participant[i], not_your_turn, strlen(not_your_turn)) == 0)
+					if (writ(participant[i], not_your_turn, strlen(not_your_turn)) <= 0)
 					{
 						who_quit[i - ROOM] = 1;
 						++quit;
@@ -311,7 +343,7 @@ room1(void *vptr)
 			}
 			FD_ZERO(&fd);
 			FD_SET(participant[turn], &fd);
-			writen(participant[ROOM + turn], your_turn, strlen(your_turn));
+			writ(participant[ROOM + turn], your_turn, strlen(your_turn));
 			num_ans = 0;
 
 			timeout.tv_sec = 3;
@@ -323,7 +355,7 @@ room1(void *vptr)
 			{
 				if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 				{
-					if (writen(participant[ROOM + i], mes, strlen(mes)) <= 0)
+					if (writ(participant[ROOM + i], mes, strlen(mes)) <= 0)
 					{
 						who_quit[i - ROOM] = 1;
 						++quit;
@@ -355,7 +387,7 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 						{
-							if (writen(participant[i], no_one, strlen(no_one)) <= 0)
+							if (writ(participant[i], no_one, strlen(no_one)) <= 0)
 							{
 								who_quit[i - ROOM] = 1;
 								quit++;
@@ -371,7 +403,7 @@ room1(void *vptr)
 				{
 					if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
 					{
-						if (readline(participant[i], user_time, strlen(user_time)) == 0)
+						if (readline(participant[i], user_time, strlen(user_time)) <= 0)
 						{
 							who_quit[i - ROOM] = 1;
 							quit++;
@@ -404,7 +436,7 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
 						{
-							if (readline(participant[i], user_time, strlen(user_time)) == 0)
+							if (readline(participant[i], user_time, strlen(user_time)) <= 0)
 							{
 								who_quit[i - ROOM] = 1;
 								quit++;
@@ -440,7 +472,7 @@ room1(void *vptr)
 			{
 				if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 				{
-					writen(participant[i], st, strlen(st));
+					writ(participant[i], st, strlen(st));
 				}
 			}
 
@@ -453,7 +485,7 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 						{
-							writen(participant[i], st, strlen(st));
+							writ(participant[i], st, strlen(st));
 							close(participant[i]);
 						}
 					}
@@ -471,7 +503,7 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 						{
-							writen(participant[i], st, strlen(st));
+							writ(participant[i], st, strlen(st));
 							close(participant[i]);
 						}
 					}
@@ -487,7 +519,7 @@ room1(void *vptr)
 					sprintf(st, "0\n");
 					if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 					{
-						writen(participant[i], st, strlen(not_your_turn));
+						writ(participant[i], st, strlen(not_your_turn));
 					}
 				}
 			}
