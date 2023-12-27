@@ -49,7 +49,7 @@ pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
 const char kick[200] = "You won\n";
 int participant[16];
 int id[16];
-char name[16][MAXLINE];
+char name[16][len_name];
 void *room1(void *);
 const char start[200] = "start\n";
 const char no_one[200] = "no\n";
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 {
 	int counter = 1; /* incremented by threads */
 	srand(time(NULL));
-	int listenfd, connfd, tmp, flag, i;
+	int listenfd, tmp, flag;
 	char str[MAXLINE];
 	// const char sorry[200] = "sorry\n";
 	const char waiting[200] = "waiting\n";
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 		// printf("OK\n");
 		clilen = sizeof(cliaddr);
 		tmp = Accept(listenfd, (SA *)&cliaddr, &clilen);
-		sprintf(name[i], "%s", str);
+		// sprintf(name[i], "%s", str);
 
 		readline(tmp, str, sizeof(str));
 
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 		Pthread_mutex_lock(&mutex1);
 
 		// writ(participant[i], how_many, strlen(how_many));
-		for (i = ROOM1; i < ROOM1 + 4; i++)
+		for (int i = ROOM1; i < ROOM1 + 4; i++)
 		{
 			if (participant[i] == -1)
 			{
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 		{
 			Pthread_mutex_lock(&mutex2);
 
-			for (i = ROOM2; i < ROOM2 + 4; i++)
+			for (int i = ROOM2; i < ROOM2 + 4; i++)
 			{
 				if (participant[i] == -1)
 				{
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 		if (flag == 0)
 		{
 			Pthread_mutex_lock(&mutex3);
-			for (i = ROOM3; i < ROOM3 + 4; i++)
+			for (int i = ROOM3; i < ROOM3 + 4; i++)
 			{
 				if (participant[i] == -1)
 				{
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 		if (flag == 0)
 		{
 			Pthread_mutex_lock(&mutex4);
-			for (i = ROOM4; i < ROOM4 + 4; i++)
+			for (int i = ROOM4; i < ROOM4 + 4; i++)
 			{
 				if (participant[i] == -1)
 				{
@@ -199,7 +199,7 @@ room1(void *vptr)
 	const char your_turn[200] = "flip\n";
 	const char not_your_turn[200] = "don't_flip\n";
 	char user_time[MAXLINE], mes[MAXLINE];
-	int maxfdp1, flag = 0, people = 0, score[4] = {0}, num_ans, k, cards = 0, turn = 0, answer = 0, color, quit;
+	int maxfdp1, people = 0, score[4] = {0}, num_ans, k, cards = 0, turn = 0, answer = 0, color, quit;
 	double tmp_f;
 	int who_quit[4];
 	struct timeval tv, timeout;
@@ -225,7 +225,7 @@ room1(void *vptr)
 			FD_ZERO(&fd);
 			maxfdp1 = -1;
 			people = 0;
-			flag = 0;
+			// flag = 0;
 			Pthread_mutex_lock(&mutex1);
 
 			for (int i = ROOM; i < ROOM + 4; i++)
