@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include "unp.h"
 
-void handle_alarm(int sig); 
+void handle_alarm(int sig);  
 void line();
 void scoreboard(int score[5], int id[5], char name[5][15]);
 void card();
