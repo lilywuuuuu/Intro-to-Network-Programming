@@ -65,8 +65,15 @@ int main(int argc, char **argv)
 		str[strlen(str) - 1] = '\0';
 		flag = 0;
 		sprintf(how_many, "%d\n", counter + 1);
-		writen(tmp, how_many, strlen(how_many));
-		writen(tmp, waiting, strlen(waiting));
+		if (writen(tmp, how_many, strlen(how_many)) <= 0)
+		{
+			continue;
+		}
+		if (writen(tmp, waiting, strlen(waiting)) <= 0)
+		{
+			continue;
+		}
+
 		Pthread_mutex_lock(&mutex1);
 
 		// writen(participant[i], how_many, strlen(how_many));
@@ -311,12 +318,12 @@ room1(void *vptr)
 			timeout.tv_usec = 0;
 			num_ans = select(participant[ROOM + turn] + 1, &fd, NULL, NULL, &timeout);
 			maxfdp1 = -1;
-			sprintf(mes, "%d %d\n", cards, answer);
+			sprintf(mes, "%d %d %d\n", cards, color, answer);
 			for (int i = ROOM; i < ROOM + 4; i++)
 			{
 				if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 				{
-					if (writen(participant[ROOM + i], mes, strlen(mes)) == 0)
+					if (writen(participant[ROOM + i], mes, strlen(mes)) <= 0)
 					{
 						who_quit[i - ROOM] = 1;
 						++quit;
@@ -348,7 +355,7 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 						{
-							if (writen(participant[i], no_one, strlen(no_one)) == 0)
+							if (writen(participant[i], no_one, strlen(no_one)) <= 0)
 							{
 								who_quit[i - ROOM] = 1;
 								quit++;
@@ -387,23 +394,6 @@ room1(void *vptr)
 					{
 						win = 1;
 					}
-					// if (score[who - ROOM] >= 10)
-					// {
-					// 	for (int i = ROOM; i < ROOM + 4; i++)
-					// 	{
-					// 		if (participant[i] != -1 && who_quit[i - ROOM] != 1)
-					// 		{
-
-					// 			close(participant[i]);
-					// 		}
-					// 	}
-					// 	for (int i = ROOM; i < ROOM + 4; i++)
-					// 	{
-					// 		participant[i] = -1;
-					// 	}
-					// 	Pthread_mutex_unlock(&mutex1);
-					// 	goto re;
-					// }
 				}
 			}
 			else
