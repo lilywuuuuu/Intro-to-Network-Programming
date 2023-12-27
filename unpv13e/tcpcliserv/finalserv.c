@@ -283,6 +283,7 @@ room1(void *vptr)
 							people--;
 						}
 					}
+					sleep(5);
 					break;
 				}
 				else
@@ -405,7 +406,7 @@ room1(void *vptr)
 				}
 				double time = 100000;
 				quit = 0;
-
+				who = -1;
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
 					if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
@@ -420,6 +421,7 @@ room1(void *vptr)
 							sscanf(user_time, "%lf", &tmp_f);
 							if (tmp_f < time)
 							{
+								time = tmp_f;
 								who = i;
 							}
 						}
