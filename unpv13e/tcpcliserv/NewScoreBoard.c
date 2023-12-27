@@ -152,6 +152,7 @@ void counter(int num){
         draw(6+11,41-31,2);
         draw(6+11,47-31,2);
     }
+    move(20,0);
     return;
 }
 void show_card(int kind, int num){
@@ -318,6 +319,7 @@ void show_card(int kind, int num){
         draw(6,47,2);
     }
     attroff(COLOR_PAIR(3));
+    move(20,0);
     return;
 }
 void flip_card(WINDOW* cardwin){
@@ -368,6 +370,7 @@ void flip_card(WINDOW* cardwin){
         wclear(cardwin);
     }
     delwin(cardwin);
+    move(20,0);
     return;
 }
 void line(){
