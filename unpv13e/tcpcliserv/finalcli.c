@@ -13,6 +13,7 @@ void line();
 void scoreboard(int score[5], int id[5], char name[5][15]);
 void card();
 void draw(int mousex, int mousey, int blank);
+void counter(int num);
 void show_card(int kind, int num);
 void flip_card(WINDOW* cardwin);
 
@@ -151,9 +152,9 @@ int main(int argc, char **argv) {
         // flipper?
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "flip\n") == 0) {  // your turn
-            move(15, 0);
+            move(20, 0);
             printw("It's your turn! Press any key to flip a card.\n");
-            alarm(5);
+            alarm(3);
             // read input
             flushinp();
             ch = getch();
@@ -174,8 +175,9 @@ int main(int argc, char **argv) {
         // print card
         WINDOW *cardwin=newwin(19,48,1,35);
         attron(COLOR_PAIR(2));
+        counter(round);
         flip_card(cardwin);
-        show_card(0,13);
+        show_card(pattern, card_num);
         attroff(COLOR_PAIR(2));
         gettimeofday(&start, NULL);
 
@@ -272,7 +274,6 @@ void scoreboard(int score[5], int id[5], char name[5][15]) {
     printw("\n\n\n\n\n\n\n\n\n\n");
     line();
 }
-
 void card(){
     move(1,40);
     printw("|----------------------|");
@@ -315,6 +316,113 @@ void draw(int mousex, int mousey, int blank){
     for(int i=0;i<blank;i++){
         printw(" ");
     }
+    return;
+}
+void counter(int num){
+    if(num==1){
+        draw(14-1,4+7,7);
+        draw(15-1,3+7,2);
+        draw(15-1,10+7,2);
+        draw(16-1,3+7,9);
+        draw(17-1,3+7,2);
+        draw(17-1,10+7,2);
+        draw(18-1,3+7,2);
+        draw(18-1,10+7,2);
+    }else if(num==2){
+        draw(2+11,41-31,9);
+        draw(3+11,48-31,2);
+        draw(4+11,41-31,9);
+        draw(5+11,41-31,2);
+        draw(6+11,41-31,9);
+    }else if(num==3){
+        draw(2+11,41-31,9);
+        draw(3+11,48-31,2);
+        draw(4+11,41-31,9);
+        draw(5+11,48-31,2);
+        draw(6+11,41-31,9);
+    }else if(num==4){
+        draw(2+11,41-31,2);
+        draw(2+11,46-31,2);
+        draw(3+11,41-31,2);
+        draw(3+11,46-31,2);
+        draw(4+11,41-31,9);
+        draw(5+11,46-31,2);
+        draw(6+11,46-31,2);
+    }else if(num==5){
+        draw(2+11,41-31,9);
+        draw(3+11,41-31,2);
+        draw(4+11,41-31,9);
+        draw(5+11,48-31,2);
+        draw(6+11,41-31,9);
+    }else if(num==6){
+        draw(2+11,41-31,9);
+        draw(3+11,41-31,2);
+        draw(4+11,41-31,9);
+        draw(5+11,41-31,2);
+        draw(5+11,48-31,2);
+        draw(6+11,41-31,9);
+    }else if(num==7){
+        draw(2+11,41-31,9);
+        draw(3+11,47-31,2);
+        draw(4+11,46-31,2);
+        draw(5+11,45-31,2);
+        draw(6+11,45-31,2);
+    }else if(num==8){
+        draw(2+11,42-31,7);
+        draw(3+11,41-31,2);
+        draw(3+11,48-31,2);
+        draw(4+11,42-31,7);
+        draw(5+11,41-31,2);
+        draw(5+11,48-31,2);
+        draw(6+11,42-31,7);
+    }else if(num==9){
+        draw(2+11,41-31,9);
+        draw(3+11,48-31,2);
+        draw(3+11,41-31,2);
+        draw(4+11,41-31,9);
+        draw(5+11,48-31,2);
+        draw(6+11,41-31,9);
+    }else if(num==10){
+        draw(2+11,41-31,2);
+        draw(3+11,41-31,2);
+        draw(4+11,41-31,2);
+        draw(5+11,41-31,2);
+        draw(6+11,41-31,2);
+        draw(2+11,45-31,7);
+        draw(3+11,45-31,2);
+        draw(3+11,50-31,2);
+        draw(4+11,45-31,2);
+        draw(4+11,50-31,2);
+        draw(5+11,45-31,2);
+        draw(5+11,50-31,2);
+        draw(6+11,45-31,7);
+    }else if(num==11){
+        draw(2+11,41-31,9);
+        draw(3+11,46-31,2);
+        draw(4+11,46-31,2);
+        draw(5+11,41-31,2);
+        draw(5+11,46-31,2);
+        draw(6+11,42-31,5);
+    }else if(num==12){
+        draw(2+11,41-31,7);
+        draw(3+11,41-31,2);
+        draw(3+11,46-31,2);
+        draw(4+11,41-31,2);
+        draw(4+11,45-31,3);
+        draw(5+11,41-31,8);
+        draw(6+11,47-31,2);
+    }else if(num==13){
+        draw(2+11,41-31,2);
+        draw(2+11,47-31,2);
+        draw(3+11,41-31,2);
+        draw(3+11,45-31,3);
+        draw(4+11,41-31,5);
+        draw(5+11,41-31,2);
+        draw(5+11,45-31,3);
+        draw(6+11,41-31,2);
+        draw(6+11,47-31,2);
+    }
+    move(20,0);
     return;
 }
 void show_card(int kind, int num){
@@ -469,7 +577,7 @@ void show_card(int kind, int num){
         draw(4,45,3);
         draw(5,41,8);
         draw(6,47,2);
-    }else if(num==0){
+    }else if(num==13){
         draw(2,41,2);
         draw(2,47,2);
         draw(3,41,2);
@@ -481,9 +589,12 @@ void show_card(int kind, int num){
         draw(6,47,2);
     }
     attroff(COLOR_PAIR(3));
+    move(20,0);
     return;
 }
 void flip_card(WINDOW* cardwin){
+    wattron(cardwin,COLOR_PAIR(2));
+    attron(COLOR_PAIR(4));
     for(int y=1;y<=16;y=y+3){
         mvwprintw(cardwin,0, y,"|-----------------------|");
         mvwprintw(cardwin,1, y,"| * * * * * * * * * * * |");
@@ -500,29 +611,35 @@ void flip_card(WINDOW* cardwin){
         mvwprintw(cardwin,12,y,"|* * * * * * * * * * * *|");
         mvwprintw(cardwin,13,y,"| * * * * * * * * * * * |");
         mvwprintw(cardwin,14,y,"|* * * * * * * * * * * *|");
-        mvwprintw(cardwin,15,y,"| * * * * * * * * * |");
-        mvwprintw(cardwin,16,y,"|* * * * * * * * *|");
-        mvwprintw(cardwin,17,y,"| * * * * * * * * |");
-        mvwprintw(cardwin,18,y,"|-----------------|");
+        mvwprintw(cardwin,15,y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,16,y,"|-----------------------|");
         wrefresh(cardwin);
         usleep(80000);
         wclear(cardwin);
     }
     for(int y=16;y>=1;y=y-3){
-        mvwprintw(cardwin,0,y,"|-----------------|");
-        mvwprintw(cardwin,1,y,"|* * * * * * * * *|");
-        mvwprintw(cardwin,2,y,"| * * * * * * * * |");
-        mvwprintw(cardwin,3,y,"|* * * * * * * * *|");
-        mvwprintw(cardwin,4,y,"| * * * * * * * * |");
-        mvwprintw(cardwin,5,y,"|* * * * * * * * *|");
-        mvwprintw(cardwin,6,y,"| * * * * * * * * |");
-        mvwprintw(cardwin,7,y,"|* * * * * * * * *|");
-        mvwprintw(cardwin,8,y,"| * * * * * * * * |");
-        mvwprintw(cardwin,9,y,"| * * * * * * * * |");
-        mvwprintw(cardwin,10,y,"|-----------------|");
+        mvwprintw(cardwin,0, y,"|-----------------------|");
+        mvwprintw(cardwin,1, y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,2, y,"|* * * * * * * * * * * *|");
+        mvwprintw(cardwin,3, y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,4, y,"|* * * * * * * * * * * *|");
+        mvwprintw(cardwin,5, y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,6, y,"|* * * * * * * * * * * *|");
+        mvwprintw(cardwin,7, y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,8, y,"|* * * * * * * * * * * *|");
+        mvwprintw(cardwin,9, y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,10,y,"|* * * * * * * * * * *  |");
+        mvwprintw(cardwin,11,y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,12,y,"|* * * * * * * * * * * *|");
+        mvwprintw(cardwin,13,y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,14,y,"|* * * * * * * * * * * *|");
+        mvwprintw(cardwin,15,y,"| * * * * * * * * * * * |");
+        mvwprintw(cardwin,16,y,"|-----------------------|");
         wrefresh(cardwin);
         usleep(20000);
         wclear(cardwin);
     }
+    delwin(cardwin);
+    move(20,0);
     return;
 }
