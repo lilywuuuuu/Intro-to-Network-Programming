@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
         // flipper?
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "flip\n") == 0) {  // your turn
-            move(20, 0);
+            move(11, 0);
             printw("It's your turn! Press any key to flip a card.\n");
             alarm(3);
             // read input
@@ -173,8 +173,10 @@ int main(int argc, char **argv) {
         sscanf(recvline, "%d %d", &card_num, &round);
 
         // print card
-        WINDOW *cardwin=newwin(19,48,1,35);
+        WINDOW *cardwin=newwin(17,48,1,40);
         attron(COLOR_PAIR(2));
+        move(12,2);
+        printw("Counter:");
         counter(round);
         flip_card(cardwin);
         show_card(pattern, card_num);
