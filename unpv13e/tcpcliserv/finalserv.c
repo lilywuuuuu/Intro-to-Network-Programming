@@ -9,26 +9,27 @@
 #define ROOM2 4
 #define ROOM3 8
 #define ROOM4 12
-int counter = 0; /* incremented by threads */
+
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex4 = PTHREAD_MUTEX_INITIALIZER;
-const char kick[] = "You won\n";
+const char kick[200] = "You won\n";
 int participant[16];
 int id[16];
-char name[16][len_name];
+char name[16][len_name + 5];
 void *room1(void *);
-const char start[] = "start\n";
-const char no_one[] = "no\n";
-const char nobody[] = "empty\n";
+const char start[200] = "start\n";
+const char no_one[200] = "no\n";
+const char nobody[200] = "empty\n";
 int main(int argc, char **argv)
 {
+	int counter = 0; /* incremented by threads */
 	srand(time(NULL));
 	int listenfd, connfd, tmp, flag, i;
 	char str[len_name];
-	const char sorry[] = "sorry\n";
-	const char waiting[] = "waiting\n";
+	// const char sorry[200] = "sorry\n";
+	const char waiting[200] = "waiting\n";
 	socklen_t clilen;
 	struct sockaddr_in cliaddr, servaddr;
 
@@ -44,7 +45,7 @@ int main(int argc, char **argv)
 	Listen(listenfd, LISTENQ);
 
 	pthread_t tidA, tidB;
-
+	char how_many[100] = "";
 	for (int i = 0; i < 16; i++)
 	{
 		participant[i] = -1;
@@ -54,14 +55,16 @@ int main(int argc, char **argv)
 	// Pthread_create(&tidB, NULL, &doit, NULL);
 	for (;;)
 	{
-
+		printf("OK\n");
 		clilen = sizeof(cliaddr);
 		tmp = Accept(listenfd, (SA *)&cliaddr, &clilen);
 		readline(tmp, str, sizeof(str));
 		flag = 0;
-		writen(tmp, waiting, sizeof(waiting));
+		writen(tmp, waiting, strlen(waiting));
 		Pthread_mutex_lock(&mutex1);
 
+		sprintf(how_many, "%d\n", counter + 1);
+		// writen(participant[i], how_many, strlen(how_many));
 		for (i = ROOM1; i < ROOM1 + 4; i++)
 		{
 			if (participant[i] == -1)
@@ -70,7 +73,11 @@ int main(int argc, char **argv)
 				flag = 1;
 				id[i] = counter;
 				++counter;
-				strcpy(name[i], str);
+				// printf("OK\n");
+				sprintf(name[i], "%s", str);
+				// printf("OK\n");
+				writen(participant[i], how_many, strlen(how_many));
+				// printf("OK\n");
 				break;
 			}
 		}
@@ -87,7 +94,8 @@ int main(int argc, char **argv)
 					flag = 1;
 					id[i] = counter;
 					++counter;
-					strcpy(name[i], str);
+					sprintf(name[i], "%s", str);
+					writen(participant[i], how_many, strlen(how_many));
 					break;
 				}
 			}
@@ -104,7 +112,8 @@ int main(int argc, char **argv)
 					flag = 1;
 					id[i] = counter;
 					++counter;
-					strcpy(name[i], str);
+					sprintf(name[i], "%s", str);
+					writen(participant[i], how_many, strlen(how_many));
 					break;
 				}
 			}
@@ -121,7 +130,8 @@ int main(int argc, char **argv)
 					flag = 1;
 					id[i] = counter;
 					++counter;
-					strcpy(name[i], str);
+					sprintf(name[i], "%s", str);
+					writen(participant[i], how_many, strlen(how_many));
 					break;
 				}
 			}
@@ -129,10 +139,12 @@ int main(int argc, char **argv)
 		}
 		if (flag == 0)
 		{
-			writen(tmp, sorry, sizeof(sorry));
+			sprintf(how_many, "-1\n");
+			writen(tmp, how_many, strlen(how_many));
 			close(tmp);
 		}
 	}
+	// printf("OK\n");
 }
 
 void *
@@ -140,8 +152,8 @@ room1(void *vptr)
 {
 	const int ROOM = 0;
 	fd_set fd;
-	const char your_turn[] = "flip\n";
-	const char not_your_turn[] = "don't_flip\n";
+	const char your_turn[200] = "flip\n";
+	const char not_your_turn[200] = "don't_flip\n";
 	char user_time[100], mes[100];
 	int maxfdp1, flag = 0, people = 0, score[4] = {0}, num_ans, k, cards = 0, turn = 0, answer = 0, color, quit;
 	double tmp_f;
@@ -195,7 +207,6 @@ room1(void *vptr)
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
 					if (participant[i] != -1)
-						;
 					{
 						if (FD_ISSET(participant[i], &fd))
 						{
@@ -204,9 +215,12 @@ room1(void *vptr)
 						}
 						else
 						{
-							char how_many[10];
-							sprintf(how_many, "%d\n", people);
-							writen(participant[i], how_many, strlen(how_many));
+							if (people != 4)
+							{
+								char how_many[200];
+								sprintf(how_many, "%d\n", people);
+								writen(participant[i], how_many, strlen(how_many));
+							}
 						}
 					}
 				}
@@ -214,12 +228,15 @@ room1(void *vptr)
 				Pthread_mutex_unlock(&mutex1);
 				if (people == 4)
 				{
+					const char four[200] = "4\n";
+					// sprintf(how_many, "4\n");
 
 					// card_num round name id score
-					char st[200];
-					sprintf("%s %s %s %s %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3]);
+					char st[3000];
+					sprintf(st, "%s %s %s %s %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3]);
 					for (int i = ROOM; i < ROOM + 4; i++)
 					{
+						writen(participant[i], four, strlen(four));
 						writen(participant[i], st, strlen(st));
 					}
 					break;
@@ -233,6 +250,7 @@ room1(void *vptr)
 
 		while (1)
 		{
+			printf("room1st\n");
 			for (int i = 0; i < 4; i++)
 			{
 				who_quit[i] = 0;
@@ -273,7 +291,7 @@ room1(void *vptr)
 			{
 				if (i - ROOM != turn && participant[i] != -1)
 				{
-					if (writen(participant[i], not_your_turn, sizeof(not_your_turn)) == 0)
+					if (writen(participant[i], not_your_turn, strlen(not_your_turn)) == 0)
 					{
 						who_quit[i - ROOM] = 1;
 						++quit;
@@ -282,7 +300,7 @@ room1(void *vptr)
 			}
 			FD_ZERO(&fd);
 			FD_SET(participant[turn], &fd);
-			writen(participant[ROOM + turn], your_turn, sizeof(your_turn));
+			writen(participant[ROOM + turn], your_turn, strlen(your_turn));
 			num_ans = 0;
 
 			timeout.tv_sec = 3;
@@ -318,6 +336,7 @@ room1(void *vptr)
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			num_ans = select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
+			// ??????????????????????
 			if (answer == cards)
 			{
 				if (num_ans == 0)
@@ -326,7 +345,7 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 						{
-							if (writen(participant[i], no_one, sizeof(no_one)) == 0)
+							if (writen(participant[i], no_one, strlen(no_one)) == 0)
 							{
 								who_quit[i - ROOM] = 1;
 								quit++;
@@ -342,7 +361,7 @@ room1(void *vptr)
 				{
 					if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
 					{
-						if (readline(participant[i], user_time, sizeof(user_time)) == 0)
+						if (readline(participant[i], user_time, strlen(user_time)) == 0)
 						{
 							who_quit[i - ROOM] = 1;
 							quit++;
@@ -445,7 +464,7 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
 						{
-							if (readline(participant[i], user_time, sizeof(user_time)) == 0)
+							if (readline(participant[i], user_time, strlen(user_time)) == 0)
 							{
 								who_quit[i - ROOM] = 1;
 								quit++;
