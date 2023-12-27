@@ -9,7 +9,7 @@
 #define ROOM2 4
 #define ROOM3 8
 #define ROOM4 12
-int a;
+// int a;
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
@@ -24,6 +24,7 @@ const char no_one[200] = "no\n";
 const char nobody[200] = "empty\n";
 int main(int argc, char **argv)
 {
+	signal(SIGPIPE, SIG_IGN);
 	int counter = 1; /* incremented by threads */
 	srand(time(NULL));
 	int listenfd, tmp, flag;
@@ -64,7 +65,7 @@ int main(int argc, char **argv)
 
 		str[strlen(str) - 1] = '\0';
 		flag = 0;
-		sprintf(how_many, "%d\n", counter + 1);
+		sprintf(how_many, "%d\n", counter);
 		if (writen(tmp, how_many, strlen(how_many)) <= 0)
 		{
 			continue;
