@@ -290,6 +290,7 @@ room1(void *vptr)
 				else
 				{
 					sleep(5);
+					// printf("OK\n");
 				}
 			}
 		}
