@@ -484,8 +484,15 @@ room1(void *vptr)
 					}
 				}
 			}
-
-			if (quit >= 3)
+			int flag = 0;
+			for (int i = ROOM; i < ROOM + 4; i++)
+			{
+				if (strcmp(name[i], "-") == 0)
+				{
+					flag++;
+				}
+			}
+			if (flag >= 3)
 			{
 				printf("situation1\n");
 				sprintf(st, "1\n");
