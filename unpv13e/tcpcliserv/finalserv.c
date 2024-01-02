@@ -187,7 +187,7 @@ room1(void *vptr)
 	const char your_turn[200] = "flip\n";
 	const char not_your_turn[200] = "don't_flip\n";
 	char user_time[MAXLINE], mes[MAXLINE];
-	int maxfdp1, people = 0, score[4] = {0}, num_ans, k, cards = 0, turn = 0, answer = 0, color, quit;
+	int maxfdp1, people = 0, score[4] = {0}, num_ans, k, cards = 0, turn = 0, answer = 0, color = 0, quit = 0;
 	double tmp_f;
 
 	struct timeval tv, timeout;
@@ -383,7 +383,7 @@ room1(void *vptr)
 				}
 			}
 			num_ans = 0;
-			sleep(3.2);
+			sleep(3);
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			num_ans = select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
