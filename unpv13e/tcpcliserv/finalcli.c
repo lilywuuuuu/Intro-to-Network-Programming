@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     snprintf(username, MAXLINE, "%s", argv[2]);
     snprintf(sendline, MAXLINE, "%s\n", username);
     if (strlen(username) > 15)
-        err_quit("username too long\n");
+        err_quit("Username is longer than 15 characters, please try again.");
     Writen(sockfd, sendline, strlen(sendline));  // name
     printf("Welcome to Slapjack, %s!\n", username);
     readline(sockfd, recvline, MAXLINE);  // id
@@ -226,7 +226,8 @@ int main(int argc, char **argv) {
             seconds = end.tv_sec - start.tv_sec;
             useconds = end.tv_usec - start.tv_usec;
             elapsed = seconds + useconds / 1000000.0;
-            Writen(sockfd, "%.6f\n", elapsed);
+            snprintf(sendline, MAXLINE, "%.6f\n", elapsed);
+            Writen(sockfd, sendline, strlen(sendline));
         }
 
         // update scoreboard
@@ -704,3 +705,4 @@ void before_flip() {
     attroff(COLOR_PAIR(2));
     return;
 }
+
