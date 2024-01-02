@@ -350,7 +350,7 @@ room1(void *vptr)
 			}
 			num_ans = 0;
 
-			timeout.tv_sec = 3;
+			timeout.tv_sec = 5;
 			timeout.tv_usec = 0;
 			num_ans = select(participant[ROOM + turn] + 1, &fd, NULL, NULL, &timeout);
 			if (readline(participant[ROOM + turn], user_time, strlen(user_time)) <= 0)
@@ -383,7 +383,7 @@ room1(void *vptr)
 				}
 			}
 			num_ans = 0;
-			sleep(3);
+			sleep(5);
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			num_ans = select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
