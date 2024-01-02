@@ -168,8 +168,8 @@ int main(int argc, char **argv) {
 
     char ch;
     while (1) {  // Exit loop on 'q' keypress
-        move(22, 2);
-        printw("                   ");
+        move(22, 0);
+        printw("                                       ");
         before_flip();
         refresh();
 
@@ -197,8 +197,6 @@ int main(int argc, char **argv) {
         // get card number and round number from server
         readline(sockfd, recvline, MAXLINE);
         sscanf(recvline, "%d %d %d", &card_num, &pattern, &round);
-        move(20, 2);
-        printw("%s", recvline);
 
         // print card
         WINDOW *cardwin = newwin(17, 49, 1, 40);
