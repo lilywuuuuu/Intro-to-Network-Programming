@@ -143,6 +143,7 @@ int main(int argc, char **argv) {
            &player_id[0], &player_id[1], &player_id[2], &player_id[3]);
     move(0, 0);
     scoreboard(score, player_id, name);
+    refresh();
 
     // make sure readline is blocking
     int sock_flags = fcntl(sockfd, F_GETFL, 0);
@@ -151,14 +152,16 @@ int main(int argc, char **argv) {
     char ch;
     while (1) {  // Exit loop on 'q' keypress
         // flipper?
+        move(22, 2);
+        print("                   ");
+        card();
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "flip\n") == 0) {  // your turn
             move(11, 0);
-            printw("It's your turn! \nPress any key to flip a card.\n");
+            printw("It's your turn!");
+            move(12, 0);
+            printw("Press any key to flip a card.");
             alarm(3);
-            attron(COLOR_PAIR(2));
-            card();
-            attroff(COLOR_PAIR(2));
             // read input
             flushinp();
             ch = getch();
@@ -167,8 +170,7 @@ int main(int argc, char **argv) {
                 move(0, 0);
                 printw("bye!\n");
                 break;
-            }
-            else if (ch != -1){
+            } else if (ch != -1) {
                 Writen(sockfd, "flip\n", 5);
             }
         }
@@ -182,13 +184,16 @@ int main(int argc, char **argv) {
         // print card
         WINDOW *cardwin = newwin(17, 49, 1, 40);
         flip_card(cardwin);
-        move(13, 2);
+        move(11, 2);
+        printw("               ");
+        move(12, 2);
+        printw("                             ");
+        move(11, 2);
         printw("Counter:");
-        attron(COLOR_PAIR(2));
         counter(round);
         show_card(pattern, card_num);
-        attroff(COLOR_PAIR(2));
         gettimeofday(&start, NULL);
+        refresh();
 
         // read input
         int hit = 1;
@@ -197,18 +202,19 @@ int main(int argc, char **argv) {
         ch = getch();
         if (ch == 'q') {
             printw("bye!\n");
+            refresh();
             break;
         } else {
-            move(20, 2);
+            move(22, 2);
             if (ch == '\n')
-                printw("you pressed enter!\n");
+                printw("you pressed enter!");
             else if (ch == ' ')
-                printw("you pressed space!\n");
+                printw("you pressed space!");
             else if (ch == -1) {  // didn't hit
                 hit = 0;
             } else
-                printw("you pressed %c!\n", ch);
-
+                printw("you pressed %c!", ch);
+            refresh();
             gettimeofday(&end, NULL);
         }
 
@@ -230,9 +236,13 @@ int main(int argc, char **argv) {
         scoreboard(score, player_id, name);
         move(20, 2);
         printw("%s", recvline);
+        refresh();
 
         // check if game is over
         readline(sockfd, recvline, MAXLINE);
+        move(20, 2);
+        printw("%s", recvline);
+        refresh();
         if (strcmp(recvline, "1\n") == 0) {  // 3 players left
             move(15, 0);
             printw("Other players quit, you are the winner!\n");
@@ -281,6 +291,7 @@ void scoreboard(int score[5], int id[5], char name[5][15]) {
     printw("=====================================================================================\n");
 }
 void card() {
+    attron(COLOR_PAIR(2));
     move(1, 40);
     printw("|----------------------|");
     move(2, 40);
@@ -315,6 +326,7 @@ void card() {
     printw("|                      |");
     move(17, 40);
     printw("|----------------------|");
+    attroff(COLOR_PAIR(2));
     return;
 }
 void draw(int mousex, int mousey, int blank) {
@@ -325,6 +337,7 @@ void draw(int mousex, int mousey, int blank) {
     return;
 }
 void counter(int num) {
+    attron(COLOR_PAIR(2));
     if (num == 1) {
         draw(14, 4 + 7, 7);
         draw(15, 3 + 7, 2);
@@ -429,6 +442,7 @@ void counter(int num) {
         draw(6 + 12, 47 - 31, 2);
     }
     move(20, 0);
+    attroff(COLOR_PAIR(2));
     return;
 }
 void show_card(int kind, int num) {
@@ -499,7 +513,6 @@ void show_card(int kind, int num) {
         draw(5, 48, 2);
         draw(6, 41, 2);
         draw(6, 48, 2);
-
     } else if (num == 2) {
         draw(2, 41, 9);
         draw(3, 48, 2);
@@ -645,7 +658,10 @@ void flip_card(WINDOW *cardwin) {
         usleep(20000);
         wclear(cardwin);
     }
+    wrefresh(cardwin);
     delwin(cardwin);
+    wattroff(cardwin, COLOR_PAIR(2));
+    attroff(COLOR_PAIR(4));
     move(20, 0);
     return;
 }
