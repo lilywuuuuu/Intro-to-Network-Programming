@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
     fd_set rset;
     char readbuffer[MAXLINE], recvline[MAXLINE], sendline[MAXLINE];
     char username[MAXLINE];
+    char ch;
     FILE *fp = stdin;
 
     // Initialize ncurses
@@ -104,26 +105,36 @@ int main(int argc, char **argv) {
                 if (strcmp(recvline, "sorry\n") == 0) {
                     move(20, 23);
                     printw("Sorry, the rooms are full. Please try again later.\n");
+                    move(21, 23);
+                    printw("Press any key to quit.\n");
+                    ch = getchar();
+                    refresh();
                     return 0;  // disconnect
                 } else if (strcmp(recvline, "waiting\n") == 0) {
                     move(20, 22);
                     printw("You are in a room! Please wait for the game to start.\n");
+                    refresh();
                 } else if (strcmp(recvline, "1\n") == 0) {
                     move(21, 31);
                     printw("The room currently has 1 player...\n");
+                    refresh();
                 } else if (strcmp(recvline, "2\n") == 0) {
                     move(21, 31);
                     printw("The room currently has 2 players...\n");
+                    refresh();
                 } else if (strcmp(recvline, "3\n") == 0) {
                     move(21, 31);
                     printw("The room currently has 3 players...\n");
+                    refresh();
                 } else if (strcmp(recvline, "4\n") == 0) {
                     move(21, 31);
-                    printw("The room currently has 4 players...\n");
+                    printw("The room currently has 4 players...");
+                    move(22, 40);
                     printw("Game is starting!\n");
+                    refresh();
+                    sleep(2);
                     break;
                 }
-                refresh();
             }
         }
         if (FD_ISSET(fileno(fp), &rset)) {  // input is readable
@@ -153,6 +164,7 @@ int main(int argc, char **argv) {
     double elapsed;
 
     // initialize screen
+    clear();
     readline(sockfd, recvline, MAXLINE);
     sscanf(recvline, "%s %s %s %s %d %d %d %d",
            name[0], name[1], name[2], name[3],
@@ -162,11 +174,6 @@ int main(int argc, char **argv) {
     before_flip();
     refresh();
 
-    // // make sure readline is blocking
-    // int sock_flags = fcntl(sockfd, F_GETFL, 0);
-    // fcntl(sockfd, F_SETFL, sock_flags & ~O_NONBLOCK);  // set socket to blocking
-
-    char ch;
     while (1) {  // Exit loop on 'q' keypress
         move(22, 0);
         printw("                                       ");
@@ -254,34 +261,29 @@ int main(int argc, char **argv) {
                &score[0], &score[1], &score[2], &score[3]);
         move(0, 0);
         scoreboard(score, player_id, name);
-        move(20, 2);
-        printw("%s", recvline);
         refresh();
 
         // check if game is over
         readline(sockfd, recvline, MAXLINE);
-        move(20, 2);
-        printw("%s", recvline);
-        refresh();
         if (strcmp(recvline, "1\n") == 0) {  // 3 players left
             move(15, 2);
             printw("Other players quit, you are the winner!\n");
-            printw("Press any key to quit.\n");
+            move(16, 2);
+            printw("Press any key to quit.");
             flushinp();
             ch = getch();
             refresh();
-            printf("bye!\n");
             break;
         } else if (strcmp(recvline, "2\n") == 0) {  // somebody won
             readline(sockfd, recvline, MAXLINE);
             sscanf(recvline, "%s\n", name[0]);
             move(15, 2);
-            printw("%s won the game!\n", name[0]);
-            printw("Press any key to quit.\n");
+            printw("%s won the game!", name[0]);
+            move(16, 2);
+            printw("Press any key to quit.");
             flushinp();
             ch = getch();
             refresh();
-            printf("bye!\n");
             break;
         }
         refresh();
