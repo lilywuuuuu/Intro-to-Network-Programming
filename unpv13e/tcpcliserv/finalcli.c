@@ -16,6 +16,7 @@ void draw(int mousex, int mousey, int blank);
 void counter(int num);
 void show_card(int kind, int num);
 void flip_card(WINDOW *cardwin);
+void before_flip();
 
 int main(int argc, char **argv) {
     int sockfd;
@@ -123,43 +124,46 @@ int main(int argc, char **argv) {
     start_color();
     init_pair(1, COLOR_RED, COLOR_RED);
     init_pair(2, COLOR_BLACK, COLOR_WHITE);
-    init_pair(3, COLOR_BLACK, COLOR_BLACK);
+    init_pair(3,COLOR_WHITE,COLOR_BLACK);
+    WINDOW *cardwin = newwin(17, 49, 1, 40);
     // nodelay(stdscr, TRUE);  // Don't wait for input
 
     int card_num = 0, pattern = 0, round = 0;
     int score[5] = {0, 0, 0, 0};
     int player_id[5] = {0, 0, 0, 0};
     char name[5][15] = {"", "", "", ""};
+    char ch;
 
     // track time
     struct timeval start, end;
     long seconds, useconds;
     double elapsed;
 
-    // initialize scoreboard
+    // initialize screen
     readline(sockfd, recvline, MAXLINE);
     sscanf(recvline, "%s %s %s %s %d %d %d %d",
            name[0], name[1], name[2], name[3],
            &player_id[0], &player_id[1], &player_id[2], &player_id[3]);
     move(0, 0);
     scoreboard(score, player_id, name);
+    before_flip();
     refresh();
 
-    // make sure readline is blocking
-    int sock_flags = fcntl(sockfd, F_GETFL, 0);
-    fcntl(sockfd, F_SETFL, sock_flags & ~O_NONBLOCK);  // set socket to blocking
+    // // make sure readline is blocking
+    // int sock_flags = fcntl(sockfd, F_GETFL, 0);
+    // fcntl(sockfd, F_SETFL, sock_flags & ~O_NONBLOCK);  // set socket to blocking
 
-    char ch;
     while (1) {  // Exit loop on 'q' keypress
-        // flipper?
         move(22, 2);
-        print("                   ");
-        card();
+        printw("                   ");
+        before_flip();
+        
+        // flipper?
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "flip\n") == 0) {  // your turn
-            move(11, 0);
+            move(11, 2);
             printw("It's your turn!");
-            move(12, 0);
+            move(12, 2);
             printw("Press any key to flip a card.");
             alarm(3);
             // read input
@@ -168,7 +172,7 @@ int main(int argc, char **argv) {
             if (ch == 'q') {
                 refresh();
                 move(0, 0);
-                printw("bye!\n");
+                printw("Bye!\n");
                 break;
             } else if (ch != -1) {
                 Writen(sockfd, "flip\n", 5);
@@ -182,7 +186,6 @@ int main(int argc, char **argv) {
         printw("%s", recvline);
 
         // print card
-        WINDOW *cardwin = newwin(17, 49, 1, 40);
         flip_card(cardwin);
         move(11, 2);
         printw("               ");
@@ -201,19 +204,18 @@ int main(int argc, char **argv) {
         alarm(3);
         ch = getch();
         if (ch == 'q') {
-            printw("bye!\n");
-            refresh();
+            printf("Bye!\n");
             break;
         } else {
             move(22, 2);
             if (ch == '\n')
-                printw("you pressed enter!");
+                printw("You pressed enter!");
             else if (ch == ' ')
-                printw("you pressed space!");
+                printw("You pressed space!");
             else if (ch == -1) {  // didn't hit
                 hit = 0;
             } else
-                printw("you pressed %c!", ch);
+                printw("You pressed %c!", ch);
             refresh();
             gettimeofday(&end, NULL);
         }
@@ -244,26 +246,24 @@ int main(int argc, char **argv) {
         printw("%s", recvline);
         refresh();
         if (strcmp(recvline, "1\n") == 0) {  // 3 players left
-            move(15, 0);
+            move(15, 2);
             printw("Other players quit, you are the winner!\n");
             printw("Press any key to quit.\n");
             flushinp();
             ch = getch();
             refresh();
-            move(0, 0);
-            printw("bye!\n");
+            printf("bye!\n");
             break;
         } else if (strcmp(recvline, "2\n") == 0) {  // somebody won
             readline(sockfd, recvline, MAXLINE);
             sscanf(recvline, "%s\n", name[0]);
-            move(15, 0);
+            move(15, 2);
             printw("%s won the game!\n", name[0]);
             printw("Press any key to quit.\n");
             flushinp();
             ch = getch();
             refresh();
-            move(0, 0);
-            printw("bye!\n");
+            printf("bye!\n");
             break;
         }
         refresh();
@@ -275,7 +275,6 @@ int main(int argc, char **argv) {
 void handle_alarm(int sig) {
     return;
 }
-
 void scoreboard(int score[5], int id[5], char name[5][15]) {
     printw("=====================================================================================\n");
     printw("|---------------------------|\n");
@@ -663,5 +662,44 @@ void flip_card(WINDOW *cardwin) {
     wattroff(cardwin, COLOR_PAIR(2));
     attroff(COLOR_PAIR(4));
     move(20, 0);
+    return;
+}
+void before_flip(){
+    attron(COLOR_PAIR(2));
+    move(1,40);
+    printw("|----------------------|");
+    move(2,40);
+    printw("| * * * * * * * * * * *|");
+    move(3,40);
+    printw("|* * * * * * * * * * * |");
+    move(4,40);
+    printw("| * * * * * * * * * * *|");
+    move(5,40);
+    printw("|* * * * * * * * * * * |");
+    move(6,40);
+    printw("| * * * * * * * * * * *|");
+    move(7,40);
+    printw("|* * * * * * * * * * * |");
+    move(8,40);
+    printw("| * * * * * * * * * * *|");
+    move(9,40);
+    printw("|* * * * * * * * * * * |");
+    move(10,40);
+    printw("| * * * * * * * * * * *|");
+    move(11,40);
+    printw("|* * * * * * * * * * * |");
+    move(12,40);
+    printw("| * * * * * * * * * * *|");
+    move(13,40);
+    printw("|* * * * * * * * * * * |");
+    move(14,40);
+    printw("| * * * * * * * * * * *|");
+    move(15,40);
+    printw("|* * * * * * * * * * * |");
+    move(16,40);
+    printw("| * * * * * * * * * * *|");
+    move(17,40);
+    printw("|----------------------|");
+    attroff(COLOR_PAIR(2));
     return;
 }
