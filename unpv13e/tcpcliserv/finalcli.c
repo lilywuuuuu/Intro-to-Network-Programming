@@ -124,15 +124,13 @@ int main(int argc, char **argv) {
     start_color();
     init_pair(1, COLOR_RED, COLOR_RED);
     init_pair(2, COLOR_BLACK, COLOR_WHITE);
-    init_pair(3,COLOR_WHITE,COLOR_BLACK);
-    WINDOW *cardwin = newwin(17, 49, 1, 40);
+    init_pair(3, COLOR_WHITE, COLOR_BLACK);
     // nodelay(stdscr, TRUE);  // Don't wait for input
 
     int card_num = 0, pattern = 0, round = 0;
     int score[5] = {0, 0, 0, 0};
     int player_id[5] = {0, 0, 0, 0};
     char name[5][15] = {"", "", "", ""};
-    char ch;
 
     // track time
     struct timeval start, end;
@@ -153,11 +151,12 @@ int main(int argc, char **argv) {
     // int sock_flags = fcntl(sockfd, F_GETFL, 0);
     // fcntl(sockfd, F_SETFL, sock_flags & ~O_NONBLOCK);  // set socket to blocking
 
+    char ch;
     while (1) {  // Exit loop on 'q' keypress
         move(22, 2);
         printw("                   ");
         before_flip();
-        
+
         // flipper?
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "flip\n") == 0) {  // your turn
@@ -186,6 +185,7 @@ int main(int argc, char **argv) {
         printw("%s", recvline);
 
         // print card
+        WINDOW *cardwin = newwin(17, 49, 1, 40);
         flip_card(cardwin);
         move(11, 2);
         printw("               ");
@@ -664,41 +664,41 @@ void flip_card(WINDOW *cardwin) {
     move(20, 0);
     return;
 }
-void before_flip(){
+void before_flip() {
     attron(COLOR_PAIR(2));
-    move(1,40);
+    move(1, 40);
     printw("|----------------------|");
-    move(2,40);
+    move(2, 40);
     printw("| * * * * * * * * * * *|");
-    move(3,40);
+    move(3, 40);
     printw("|* * * * * * * * * * * |");
-    move(4,40);
+    move(4, 40);
     printw("| * * * * * * * * * * *|");
-    move(5,40);
+    move(5, 40);
     printw("|* * * * * * * * * * * |");
-    move(6,40);
+    move(6, 40);
     printw("| * * * * * * * * * * *|");
-    move(7,40);
+    move(7, 40);
     printw("|* * * * * * * * * * * |");
-    move(8,40);
+    move(8, 40);
     printw("| * * * * * * * * * * *|");
-    move(9,40);
+    move(9, 40);
     printw("|* * * * * * * * * * * |");
-    move(10,40);
+    move(10, 40);
     printw("| * * * * * * * * * * *|");
-    move(11,40);
+    move(11, 40);
     printw("|* * * * * * * * * * * |");
-    move(12,40);
+    move(12, 40);
     printw("| * * * * * * * * * * *|");
-    move(13,40);
+    move(13, 40);
     printw("|* * * * * * * * * * * |");
-    move(14,40);
+    move(14, 40);
     printw("| * * * * * * * * * * *|");
-    move(15,40);
+    move(15, 40);
     printw("|* * * * * * * * * * * |");
-    move(16,40);
+    move(16, 40);
     printw("| * * * * * * * * * * *|");
-    move(17,40);
+    move(17, 40);
     printw("|----------------------|");
     attroff(COLOR_PAIR(2));
     return;
