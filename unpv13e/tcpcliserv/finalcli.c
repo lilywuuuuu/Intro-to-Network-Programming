@@ -176,6 +176,30 @@ int main(int argc, char **argv) {
             } else if (ch != -1) {
                 Writen(sockfd, "flip\n", 5);
             }
+            // nodelay(stdscr, TRUE);
+            // time_t start_time = time(NULL);
+            // while (1) {
+            //     ch = getch();
+
+            //     // Check if 3 seconds have passed
+            //     if (time(NULL) - start_time >= 3) {
+            //         break;
+            //     }
+
+            //     // Check if the user pressed a key
+            //     if (ch != ERR) {
+            //         if (ch == 'q') {
+            //             refresh();
+            //             move(0, 0);
+            //             printw("Bye!\n");
+            //             break;
+            //         } else {
+            //             Writen(sockfd, "flip\n", 5);
+            //             break;
+            //         }
+            //     }
+            // }
+            // nodelay(stdscr, FALSE);
         }
 
         // get card number and round number from server
@@ -200,8 +224,8 @@ int main(int argc, char **argv) {
 
         // read input
         int hit = 1;
-        flushinp();
         alarm(3);
+        flushinp();
         ch = getch();
         if (ch == 'q') {
             printf("Bye!\n");
