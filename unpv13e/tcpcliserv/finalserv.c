@@ -350,7 +350,7 @@ room1(void *vptr)
 			}
 			num_ans = 0;
 
-			timeout.tv_sec = 3;
+			timeout.tv_sec = 4;
 			timeout.tv_usec = 0;
 			num_ans = select(participant[ROOM + turn] + 1, &fd, NULL, NULL, &timeout);
 			if (num_ans != 0)
@@ -409,6 +409,7 @@ room1(void *vptr)
 							}
 							else
 							{
+
 								sscanf(user_time, "%lf", &tmp_f);
 								if (tmp_f < time)
 								{
@@ -416,6 +417,7 @@ room1(void *vptr)
 									who = i;
 								}
 							}
+							printf("accept: id:%d time%s", id[i], user_time);
 						}
 					}
 
