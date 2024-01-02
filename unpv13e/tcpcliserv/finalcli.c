@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
                 if (peer_exit)
                     return 0;
                 else {
-                    move(20, 2);
+                    move(20, 30);
                     printw("Thank you for playing, see you next time!\n");
                     stdineof = 1;
                     return 0;  // disconnect
