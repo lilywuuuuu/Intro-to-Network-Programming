@@ -387,7 +387,7 @@ room1(void *vptr)
 				}
 			}
 			num_ans = 0;
-			sleep(5);
+			sleep(4);
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			num_ans = select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
@@ -536,7 +536,7 @@ room1(void *vptr)
 			else
 			{
 				printf("situation3\n");
-				sprintf(st, "0\n");
+				sprintf(st, "4\n");
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
 					if (participant[i] != -1 && who_quit[i - ROOM] != 1)
