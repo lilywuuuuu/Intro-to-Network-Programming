@@ -350,13 +350,17 @@ room1(void *vptr)
 			}
 			num_ans = 0;
 
-			timeout.tv_sec = 5;
+			timeout.tv_sec = 3;
 			timeout.tv_usec = 0;
 			num_ans = select(participant[ROOM + turn] + 1, &fd, NULL, NULL, &timeout);
-			if (readline(participant[ROOM + turn], user_time, strlen(user_time)) <= 0)
+			if (num_ans != 0)
 			{
-				;
+				if (readline(participant[ROOM + turn], user_time, strlen(user_time)) <= 0)
+				{
+					;
+				}
 			}
+
 			maxfdp1 = -1;
 			sprintf(mes, "%d %d %d\n", cards, color, answer);
 			for (int i = ROOM; i < ROOM + 4; i++)
