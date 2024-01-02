@@ -200,7 +200,7 @@ room1(void *vptr)
 	re:
 		cards = 1;
 		answer = 0;
-		turn = 0;
+		turn = 3;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -355,7 +355,7 @@ room1(void *vptr)
 			num_ans = select(participant[ROOM + turn] + 1, &fd, NULL, NULL, &timeout);
 			if (num_ans != 0)
 			{
-				if (readline(participant[ROOM + turn], user_time, strlen(user_time)) <= 0)
+				if (readline(participant[ROOM + turn], user_time, MAXLINE) <= 0)
 				{
 					;
 				}
@@ -403,7 +403,7 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
 						{
-							if (readline(participant[i], user_time, strlen(user_time)) <= 0)
+							if (readline(participant[i], user_time, MAXLINE) <= 0)
 							{
 								who_quit[i - ROOM] = 1;
 								quit++;
@@ -439,15 +439,18 @@ room1(void *vptr)
 					{
 						if (participant[i] != -1 && who_quit[i - ROOM] != 1 && FD_ISSET(participant[i], &fd))
 						{
-							if (readline(participant[i], user_time, strlen(user_time)) <= 0)
+							if (readline(participant[i], user_time, MAXLINE) <= 0)
 							{
 								who_quit[i - ROOM] = 1;
 								quit++;
 							}
 							else
 							{
-								// score[i] = max(score[i] - 1, 0);
+
+								printf("wrong accept %s wrong\n", user_time);
 								score[i]--;
+
+								// score[i] = max(score[i] - 1, 0);
 							}
 						}
 					}
