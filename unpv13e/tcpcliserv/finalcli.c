@@ -95,27 +95,35 @@ int main(int argc, char **argv) {
                 if (stdineof == 1)
                     return 0;  // normal termination
                 else {
-                    printf("Server has shutdown.\n");
+                    move(20, 30);
+                    printw("Server has shutdown.\n");
                     peer_exit = 1;
                 }
             } else if (n > 0) {
                 recvline[n] = '\0';
                 if (strcmp(recvline, "sorry\n") == 0) {
-                    printf("Sorry, the rooms are full. Please try again later.\n");
+                    move(20, 23);
+                    printw("Sorry, the rooms are full. Please try again later.\n");
                     return 0;  // disconnect
                 } else if (strcmp(recvline, "waiting\n") == 0) {
-                    printf("You are in a room! Please wait for the game to start.\n");
+                    move(20, 22);
+                    printw("You are in a room! Please wait for the game to start.\n");
                 } else if (strcmp(recvline, "1\n") == 0) {
-                    printf("The room currently has 1 player...\n");
+                    move(21, 31);
+                    printw("The room currently has 1 player...\n");
                 } else if (strcmp(recvline, "2\n") == 0) {
-                    printf("The room currently has 2 players...\n");
+                    move(21, 31);
+                    printw("The room currently has 2 players...\n");
                 } else if (strcmp(recvline, "3\n") == 0) {
-                    printf("The room currently has 3 players...\n");
+                    move(21, 31);
+                    printw("The room currently has 3 players...\n");
                 } else if (strcmp(recvline, "4\n") == 0) {
-                    printf("The room currently has 4 players...\n");
-                    printf("Game is starting!\n");
+                    move(21, 31);
+                    printw("The room currently has 4 players...\n");
+                    printw("Game is starting!\n");
                     break;
                 }
+                refresh();
             }
         }
         if (FD_ISSET(fileno(fp), &rset)) {  // input is readable
@@ -124,7 +132,8 @@ int main(int argc, char **argv) {
                 if (peer_exit)
                     return 0;
                 else {
-                    printf("Thank you for playing, see you next time!\n");
+                    move(20, 2);
+                    printw("Thank you for playing, see you next time!\n");
                     stdineof = 1;
                     return 0;  // disconnect
                 };
@@ -750,9 +759,9 @@ void frame(char name[15], int id){
     move(8,52+21);
     printw("|");
     move(9,21);
-    printw("|                  Your ID is %-2d.                   |\n", id);
+    printw("|                  Your ID is %-2d                    |\n", id);
     move(10,21);
-    printw("| Please wait for the server to put you in a room.. |\n");
+    printw("| Please wait for the server to put you in a room!  |\n");
     move(11,21);
     printw("|---------------------------------------------------|\n");
 }
