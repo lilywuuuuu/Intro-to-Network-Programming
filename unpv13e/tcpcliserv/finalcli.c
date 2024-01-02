@@ -9,7 +9,6 @@
 #include "unp.h"
 
 void handle_alarm(int sig);  
-void line();
 void scoreboard(int score[5], int id[5], char name[5][15]);
 void card();
 void draw(int mousex, int mousey, int blank);
@@ -267,12 +266,8 @@ void handle_alarm(int sig) {
     return;
 }
 
-void line() {
-    printw("=====================================================================================\n");
-}
-
 void scoreboard(int score[5], int id[5], char name[5][15]) {
-    line();
+    printw("=====================================================================================\n");
     printw("|---------------------------|\n");
     printw("|\t Score Board\t    |\n");
     printw("|\t\t\t    |\n");
@@ -283,7 +278,7 @@ void scoreboard(int score[5], int id[5], char name[5][15]) {
     printw("|\t\t\t    |\n");
     printw("|---------------------------|\n");
     printw("\n\n\n\n\n\n\n\n\n\n");
-    line();
+    printw("=====================================================================================\n");
 }
 void card(){
     move(1,40);
