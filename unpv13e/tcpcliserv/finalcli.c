@@ -17,6 +17,8 @@ void counter(int num);
 void show_card(int kind, int num);
 void flip_card(WINDOW *cardwin);
 void before_flip();
+void title();
+void frame(char name[15], int id);
 
 int main(int argc, char **argv) {
     int sockfd;
@@ -26,6 +28,16 @@ int main(int argc, char **argv) {
     char readbuffer[MAXLINE], recvline[MAXLINE], sendline[MAXLINE];
     char username[MAXLINE];
     FILE *fp = stdin;
+
+    // Initialize ncurses
+    initscr();             
+    cbreak();              // Line buffering disabled, pass characters immediately
+    noecho();              // Don't echo characters to the screen
+    keypad(stdscr, TRUE);  // Enable the keypad for special keys
+    start_color();
+    init_pair(1, COLOR_RED, COLOR_RED);
+    init_pair(2, COLOR_BLACK, COLOR_WHITE);
+    init_pair(3, COLOR_WHITE, COLOR_BLACK);
 
     // initialize connection
     if (argc != 3)
@@ -47,11 +59,15 @@ int main(int argc, char **argv) {
     if (strlen(username) > 15)
         err_quit("Username is longer than 15 characters, please try again.");
     Writen(sockfd, sendline, strlen(sendline));  // name
-    printf("Welcome to Slapjack, %s!\n", username);
+    // printf("Welcome to Slapjack, %s!\n", username);
     readline(sockfd, recvline, MAXLINE);  // id
     sscanf(recvline, "%d", &id);
-    printf("Your ID is %d.\n", id);
-    printf("Please wait for the server to put you in a room...\n");
+    // printf("Your ID is %d.\n", id);
+    move(0, 0);  // move the cursor to the beginning of the line
+    title();
+    frame(username, id);
+    refresh();
+    // printf("Please wait for the server to put you in a room...\n");
 
     stdineof = 0;
     peer_exit = 0;
@@ -117,16 +133,6 @@ int main(int argc, char **argv) {
     }
 
     // game starts
-    initscr();             // Initialize ncurses
-    cbreak();              // Line buffering disabled, pass characters immediately
-    noecho();              // Don't echo characters to the screen
-    keypad(stdscr, TRUE);  // Enable the keypad for special keys
-    start_color();
-    init_pair(1, COLOR_RED, COLOR_RED);
-    init_pair(2, COLOR_BLACK, COLOR_WHITE);
-    init_pair(3, COLOR_WHITE, COLOR_BLACK);
-    // nodelay(stdscr, TRUE);  // Don't wait for input
-
     int card_num = 0, pattern = 0, round = 0;
     int score[5] = {0, 0, 0, 0};
     int player_id[5] = {0, 0, 0, 0};
@@ -227,6 +233,9 @@ int main(int argc, char **argv) {
             useconds = end.tv_usec - start.tv_usec;
             elapsed = seconds + useconds / 1000000.0;
             snprintf(sendline, MAXLINE, "%.6f\n", elapsed);
+            move(22, 2);
+            printw("You hit the card in %.6f seconds.", elapsed);
+            refresh();
             Writen(sockfd, sendline, strlen(sendline));
         }
 
@@ -339,108 +348,113 @@ void draw(int mousex, int mousey, int blank) {
 }
 void counter(int num) {
     attron(COLOR_PAIR(2));
-    if (num == 1) {
-        draw(14, 4 + 7, 7);
-        draw(15, 3 + 7, 2);
-        draw(15, 10 + 7, 2);
-        draw(16, 3 + 7, 9);
-        draw(17, 3 + 7, 2);
-        draw(17, 10 + 7, 2);
-        draw(18, 3 + 7, 2);
-        draw(18, 10 + 7, 2);
-    } else if (num == 2) {
-        draw(2 + 12, 41 - 31, 9);
-        draw(3 + 12, 48 - 31, 2);
-        draw(4 + 12, 41 - 31, 9);
-        draw(5 + 12, 41 - 31, 2);
-        draw(6 + 12, 41 - 31, 9);
-    } else if (num == 3) {
-        draw(2 + 12, 41 - 31, 9);
-        draw(3 + 12, 48 - 31, 2);
-        draw(4 + 12, 41 - 31, 9);
-        draw(5 + 12, 48 - 31, 2);
-        draw(6 + 12, 41 - 31, 9);
-    } else if (num == 4) {
-        draw(2 + 12, 41 - 31, 2);
-        draw(2 + 12, 46 - 31, 2);
-        draw(3 + 12, 41 - 31, 2);
-        draw(3 + 12, 46 - 31, 2);
-        draw(4 + 12, 41 - 31, 9);
-        draw(5 + 12, 46 - 31, 2);
-        draw(6 + 12, 46 - 31, 2);
-    } else if (num == 5) {
-        draw(2 + 12, 41 - 31, 9);
-        draw(3 + 12, 41 - 31, 2);
-        draw(4 + 12, 41 - 31, 9);
-        draw(5 + 12, 48 - 31, 2);
-        draw(6 + 12, 41 - 31, 9);
-    } else if (num == 6) {
-        draw(2 + 12, 41 - 31, 9);
-        draw(3 + 12, 41 - 31, 2);
-        draw(4 + 12, 41 - 31, 9);
-        draw(5 + 12, 41 - 31, 2);
-        draw(5 + 12, 48 - 31, 2);
-        draw(6 + 12, 41 - 31, 9);
-    } else if (num == 7) {
-        draw(2 + 12, 41 - 31, 9);
-        draw(3 + 12, 47 - 31, 2);
-        draw(4 + 12, 46 - 31, 2);
-        draw(5 + 12, 45 - 31, 2);
-        draw(6 + 12, 45 - 31, 2);
-    } else if (num == 8) {
-        draw(2 + 12, 42 - 31, 7);
-        draw(3 + 12, 41 - 31, 2);
-        draw(3 + 12, 48 - 31, 2);
-        draw(4 + 12, 42 - 31, 7);
-        draw(5 + 12, 41 - 31, 2);
-        draw(5 + 12, 48 - 31, 2);
-        draw(6 + 12, 42 - 31, 7);
-    } else if (num == 9) {
-        draw(2 + 12, 41 - 31, 9);
-        draw(3 + 12, 48 - 31, 2);
-        draw(3 + 12, 41 - 31, 2);
-        draw(4 + 12, 41 - 31, 9);
-        draw(5 + 12, 48 - 31, 2);
-        draw(6 + 12, 41 - 31, 9);
-    } else if (num == 10) {
-        draw(2 + 12, 41 - 31, 2);
-        draw(3 + 12, 41 - 31, 2);
-        draw(4 + 12, 41 - 31, 2);
-        draw(5 + 12, 41 - 31, 2);
-        draw(6 + 12, 41 - 31, 2);
-        draw(2 + 12, 45 - 31, 7);
-        draw(3 + 12, 45 - 31, 2);
-        draw(3 + 12, 50 - 31, 2);
-        draw(4 + 12, 45 - 31, 2);
-        draw(4 + 12, 50 - 31, 2);
-        draw(5 + 12, 45 - 31, 2);
-        draw(5 + 12, 50 - 31, 2);
-        draw(6 + 12, 45 - 31, 7);
-    } else if (num == 11) {
-        draw(2 + 12, 41 - 31, 9);
-        draw(3 + 12, 46 - 31, 2);
-        draw(4 + 12, 46 - 31, 2);
-        draw(5 + 12, 41 - 31, 2);
-        draw(5 + 12, 46 - 31, 2);
-        draw(6 + 12, 42 - 31, 5);
-    } else if (num == 12) {
-        draw(2 + 12, 41 - 31, 7);
-        draw(3 + 12, 41 - 31, 2);
-        draw(3 + 12, 46 - 31, 2);
-        draw(4 + 12, 41 - 31, 2);
-        draw(4 + 12, 45 - 31, 3);
-        draw(5 + 12, 41 - 31, 8);
-        draw(6 + 12, 47 - 31, 2);
-    } else if (num == 0) {
-        draw(2 + 12, 41 - 31, 2);
-        draw(2 + 12, 47 - 31, 2);
-        draw(3 + 12, 41 - 31, 2);
-        draw(3 + 12, 45 - 31, 3);
-        draw(4 + 12, 41 - 31, 5);
-        draw(5 + 12, 41 - 31, 2);
-        draw(5 + 12, 45 - 31, 3);
-        draw(6 + 12, 41 - 31, 2);
-        draw(6 + 12, 47 - 31, 2);
+    if(num==1){
+        draw(14,13,2);
+        draw(15,13,2);
+        draw(16,6+7,2);
+        draw(17,6+7,2);
+        draw(18,13,2);
+    }else if(num==2){
+        draw(2+12,41-31,9);
+        draw(3+12,48-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,41-31,2);
+        draw(6+12,41-31,9);
+    }else if(num==3){
+        draw(2+12,41-31,9);
+        draw(3+12,48-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,48-31,2);
+        draw(6+12,41-31,9);
+    }else if(num==4){
+        draw(2+12,41-31,2);
+        draw(2+12,46-31,2);
+        draw(3+12,41-31,2);
+        draw(3+12,46-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,46-31,2);
+        draw(6+12,46-31,2);
+    }else if(num==5){
+        draw(2+12,41-31,9);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,48-31,2);
+        draw(6+12,41-31,9);
+    }else if(num==6){
+        draw(2+12,41-31,9);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,41-31,2);
+        draw(5+12,48-31,2);
+        draw(6+12,41-31,9);
+    }else if(num==7){
+        draw(2+12,41-31,9);
+        draw(3+12,47-31,2);
+        draw(4+12,46-31,2);
+        draw(5+12,45-31,2);
+        draw(6+12,45-31,2);
+    }else if(num==8){
+        draw(2+12,42-31,7);
+        draw(3+12,41-31,2);
+        draw(3+12,48-31,2);
+        draw(4+12,42-31,7);
+        draw(5+12,41-31,2);
+        draw(5+12,48-31,2);
+        draw(6+12,42-31,7);
+    }else if(num==9){
+        draw(2+12,41-31,9);
+        draw(3+12,48-31,2);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,9);
+        draw(5+12,48-31,2);
+        draw(6+12,41-31,9);
+    }else if(num==10){
+        draw(2+12,41-31,2);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,2);
+        draw(5+12,41-31,2);
+        draw(6+12,41-31,2);
+        draw(2+12,45-31,7);
+        draw(3+12,45-31,2);
+        draw(3+12,50-31,2);
+        draw(4+12,45-31,2);
+        draw(4+12,50-31,2);
+        draw(5+12,45-31,2);
+        draw(5+12,50-31,2);
+        draw(6+12,45-31,7);
+    }else if(num==11){
+        draw(2+12,41-31,2);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,2);
+        draw(5+12,41-31,2);
+        draw(6+12,41-31,2);
+        draw(2+12,47-31,2);
+        draw(3+12,47-31,2);
+        draw(4+12,47-31,2);
+        draw(5+12,47-31,2);
+        draw(6+12,47-31,2);
+    }else if(num==12){
+        draw(2+12,41-31,2);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,2);
+        draw(5+12,41-31,2);
+        draw(6+12,41-31,2);
+        draw(2+12,45-31,7);
+        draw(3+12,50-31,2);
+        draw(4+12,45-31,7);
+        draw(5+12,45-31,2);
+        draw(6+12,45-31,7);
+    }else if(num==0){
+        draw(2+12,41-31,2);
+        draw(3+12,41-31,2);
+        draw(4+12,41-31,2);
+        draw(5+12,41-31,2);
+        draw(6+12,41-31,2);
+        draw(2+12,45-31,7);
+        draw(3+12,50-31,2);
+        draw(4+12,45-31,7);
+        draw(5+12,50-31,2);
+        draw(6+12,45-31,7);
     }
     move(20, 0);
     attroff(COLOR_PAIR(2));
@@ -705,4 +719,40 @@ void before_flip() {
     attroff(COLOR_PAIR(2));
     return;
 }
-
+void title(){
+    move(0, 21);
+    printw("  ____   _                    _               _     \n");
+    move(1,21);
+    printw(" / ___| | |  __ _  _ __      | |  __ _   ___ | | __ \n");
+    move(2,21);
+    printw(" \\___ \\ | | / _` || '_ \\  _  | | / _` | / __|| |/ / \n");
+    move(3,21);
+    printw("  ___) || || (_| || |_) || |_| || (_| || (__ |   <  \n");
+    move(4,21);
+    printw(" |____/ |_| \\__,_|| .__/  \\___/  \\__,_| \\___||_|\\_\\ \n");
+    move(5,21);
+    printw("                  |_|                               \n");
+    move(0, 0); 
+}
+void frame(char name[15], int id){
+    move(6,0);
+    char m[30];
+    sprintf(m,"Welcome to SlapJack, %s.",name);
+    int start=(53-strlen(m))/2;
+    move(6,21);
+    printw("|---------------------------------------------------|\n");
+    move(7,21);
+    printw("|                                                   |\n");
+    move(8,21);
+    printw("|                                                   |\n");
+    move(8,start+21);
+    printw("%s",m);;
+    move(8,52+21);
+    printw("|");
+    move(9,21);
+    printw("|                  Your ID is %-2d.                   |\n", id);
+    move(10,21);
+    printw("| Please wait for the server to put you in a room.. |\n");
+    move(11,21);
+    printw("|---------------------------------------------------|\n");
+}
