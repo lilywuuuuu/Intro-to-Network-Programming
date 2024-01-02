@@ -391,6 +391,7 @@ room1(void *vptr)
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			num_ans = select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
+			printf("num_ans: %d\n", num_ans);
 			if (answer == cards)
 			{
 				if (num_ans != 0)
@@ -433,6 +434,7 @@ room1(void *vptr)
 			}
 			else
 			{
+
 				if (num_ans != 0)
 				{
 					for (int i = ROOM; i < ROOM + 4; i++)
@@ -446,7 +448,8 @@ room1(void *vptr)
 							}
 							else
 							{
-								score[i] = max(score[i] - 1, 0);
+								// score[i] = max(score[i] - 1, 0);
+								score[i]--;
 							}
 						}
 					}
