@@ -454,7 +454,7 @@ room1(void *vptr)
 			for (int i = ROOM; i < ROOM + 4; i++)
 			{
 
-				if (who_quit[i - ROOM] == 1)
+				if (who_quit[i - ROOM] == 1 || participant[i] == -1)
 				{
 					score[i - ROOM] = 0;
 					participant[i] = -1;
@@ -477,53 +477,56 @@ room1(void *vptr)
 				}
 			}
 
-			for (int i = ROOM; i < ROOM + 4; i++)
+			if (quit >= 3)
 			{
-				if (quit >= 3)
+				printf("situation1\n");
+				sprintf(st, "1\n");
+				for (int i = ROOM; i < ROOM + 4; i++)
 				{
-					sprintf(st, "1\n");
-					for (int i = ROOM; i < ROOM + 4; i++)
+					if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 					{
-						if (participant[i] != -1 && who_quit[i - ROOM] != 1)
+						if (writen(participant[i], st, strlen(st)) <= 0)
 						{
-							if (writen(participant[i], st, strlen(st)) <= 0)
-							{
-								;
-							}
-							close(participant[i]);
+							;
 						}
+						close(participant[i]);
 					}
-					for (int i = ROOM; i < ROOM + 4; i++)
-					{
-						participant[i] = -1;
-					}
-					Pthread_mutex_unlock(&(mutex[room_num]));
-					goto re;
 				}
-				else if (win == 1)
+				for (int i = ROOM; i < ROOM + 4; i++)
 				{
-					sprintf(st, "2\n%s\n", name[who]);
-					for (int i = ROOM; i < ROOM + 4; i++)
+					participant[i] = -1;
+				}
+				Pthread_mutex_unlock(&(mutex[room_num]));
+				goto re;
+			}
+			else if (win == 1)
+			{
+				printf("situation2\n");
+				sprintf(st, "2\n%s\n", name[who]);
+				for (int i = ROOM; i < ROOM + 4; i++)
+				{
+					if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 					{
-						if (participant[i] != -1 && who_quit[i - ROOM] != 1)
+						if (writen(participant[i], st, strlen(st)) <= 0)
 						{
-							if (writen(participant[i], st, strlen(st)) <= 0)
-							{
-								;
-							}
-							close(participant[i]);
+							;
 						}
+						close(participant[i]);
 					}
-					for (int i = ROOM; i < ROOM + 4; i++)
-					{
-						participant[i] = -1;
-					}
-					Pthread_mutex_unlock(&(mutex[room_num]));
-					goto re;
 				}
-				else
+				for (int i = ROOM; i < ROOM + 4; i++)
 				{
-					sprintf(st, "0\n");
+					participant[i] = -1;
+				}
+				Pthread_mutex_unlock(&(mutex[room_num]));
+				goto re;
+			}
+			else
+			{
+				printf("situation3\n");
+				sprintf(st, "0\n");
+				for (int i = ROOM; i < ROOM + 4; i++)
+				{
 					if (participant[i] != -1 && who_quit[i - ROOM] != 1)
 					{
 						if (writen(participant[i], st, strlen(st)) <= 0)
@@ -536,6 +539,7 @@ room1(void *vptr)
 					}
 				}
 			}
+
 			Pthread_mutex_unlock(&(mutex[room_num]));
 		}
 	}
