@@ -347,8 +347,8 @@ room1(void *vptr)
 			}
 			num_ans = 0;
 
-			timeout.tv_sec = 4;
-			timeout.tv_usec = 0;
+			timeout.tv_sec = 3;
+			timeout.tv_usec = 200;
 			num_ans = select(participant[ROOM + turn] + 1, &fd, NULL, NULL, &timeout);
 			if (num_ans != 0)
 			{
@@ -383,7 +383,7 @@ room1(void *vptr)
 				}
 			}
 			num_ans = 0;
-			sleep(4);
+			sleep(3.2);
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			num_ans = select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
@@ -420,7 +420,7 @@ room1(void *vptr)
 					if (who != -1)
 					{
 						score[who - ROOM]++;
-						if (score[who - ROOM] >= 10)
+						if (score[who - ROOM] >= 3)
 						{
 							win = 1;
 						}
@@ -444,9 +444,9 @@ room1(void *vptr)
 							{
 
 								printf("wrong accept %s wrong\n", user_time);
-								score[i]--;
+								// score[i]--;
 
-								// score[i] = max(score[i] - 1, 0);
+								score[i] = max(score[i] - 1, 0);
 							}
 						}
 					}
