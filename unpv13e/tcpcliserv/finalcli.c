@@ -154,9 +154,9 @@ int main(int argc, char **argv) {
 
     // game starts
     int card_num = 0, pattern = 0, round = 0;
-    int score[5] = {0, 0, 0, 0};
-    int player_id[5] = {0, 0, 0, 0};
-    char name[5][15] = {"", "", "", ""};
+    int score[4] = {0, 0, 0, 0};
+    int player_id[4] = {0, 0, 0, 0};
+    char name[4][15] = {"", "", "", ""};
 
     // track time
     struct timeval start, end;
@@ -166,12 +166,11 @@ int main(int argc, char **argv) {
     // initialize screen
     clear();
     readline(sockfd, recvline, MAXLINE);
-    sscanf(recvline, "%s %s %s %s %d %d %d %d",
+    sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
            name[0], name[1], name[2], name[3],
-           &player_id[0], &player_id[1], &player_id[2], &player_id[3]);
-    move(0, 0);
+           &player_id[0], &player_id[1], &player_id[2], &player_id[3], 
+           &score[0], &score[1], &score[2], &score[3]);
     scoreboard(score, player_id, name);
-    before_flip();
     refresh();
 
     while (1) {  // Exit loop on 'q' keypress
@@ -208,12 +207,6 @@ int main(int argc, char **argv) {
         // print card
         WINDOW *cardwin = newwin(17, 49, 1, 40);
         flip_card(cardwin);
-        move(11, 2);
-        printw("               ");
-        move(12, 2);
-        printw("                             ");
-        move(11, 2);
-        printw("Counter:");
         counter(round);
         show_card(pattern, card_num);
         gettimeofday(&start, NULL);
@@ -253,16 +246,6 @@ int main(int argc, char **argv) {
             Writen(sockfd, sendline, strlen(sendline));
         }
 
-        // update scoreboard
-        readline(sockfd, recvline, MAXLINE);
-        sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
-               name[0], name[1], name[2], name[3],
-               &player_id[0], &player_id[1], &player_id[2], &player_id[3],
-               &score[0], &score[1], &score[2], &score[3]);
-        move(0, 0);
-        scoreboard(score, player_id, name);
-        refresh();
-
         // check if game is over
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "1\n") == 0) {  // 3 players left
@@ -286,6 +269,14 @@ int main(int argc, char **argv) {
             refresh();
             break;
         }
+
+        // update scoreboard
+        readline(sockfd, recvline, MAXLINE);
+        sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
+               name[0], name[1], name[2], name[3],
+               &player_id[0], &player_id[1], &player_id[2], &player_id[3],
+               &score[0], &score[1], &score[2], &score[3]);
+        scoreboard(score, player_id, name);
         refresh();
     }
     endwin();
@@ -296,6 +287,7 @@ void handle_alarm(int sig) {
     return;
 }
 void scoreboard(int score[5], int id[5], char name[5][15]) {
+    move(0, 0);
     printw("=====================================================================================\n");
     printw("|---------------------------|\n");
     printw("|\t Score Board\t    |\n");
@@ -356,6 +348,10 @@ void draw(int mousex, int mousey, int blank) {
     return;
 }
 void counter(int num) {
+    move(11, 2);
+    printw("Counter:       ");
+    move(12, 2);
+    printw("                             ");
     attron(COLOR_PAIR(2));
     if(num==1){
         draw(14,13,2);
