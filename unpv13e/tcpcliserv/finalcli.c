@@ -10,7 +10,7 @@
 #include "unp.h"
 #define xmove 2
 #define ymove 2
-#define winpoint 1
+int winpoint = 10;
 
 void handle_alarm(int sig);
 void scoreboard(int score[5], int id[5], char name[5][15]);
@@ -247,6 +247,7 @@ int main(int argc, char **argv) {
             if (strcmp(recvline, "1\n") == 0) {  // 3 players left
                 endframe(username, 1);
             } else if (strcmp(recvline, "2\n") == 0) {  // somebody won
+                winpoint = max(score[0], max(score[1], max(score[2], score[3]))) + 1;
                 readline(sockfd, recvline, MAXLINE);
                 endframe(recvline, 2);
             }
@@ -807,7 +808,7 @@ void endscoreboard(int score[5], int id[5], char name[5][15]) {
     int moveindex = 8;
     for (int i = 0; i < 4; i++) {
         move(moveindex++, 0);
-        if (score[i] == 10) {
+        if (score[i] == winpoint) {
             printw("  |");
             attron(COLOR_PAIR(1));
             printw("  %-2d     %-15s%-2d ", score[i], name[i], id[i]);
