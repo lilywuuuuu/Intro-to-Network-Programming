@@ -105,12 +105,12 @@ int main(int argc, char **argv) {
             } else if (n > 0) {
                 recvline[n] = '\0';
                 if (strcmp(recvline, "sorry\n") == 0) {
-                    move(20, 23);
-                    printw("Sorry, the rooms are full. Please try again later.");
-                    move(21, 23);
-                    printw("Press any key to quit.");
-                    ch = getchar();
+                    move(20, 21);
+                    printw("  Sorry, the rooms are full. Please try again later.");
+                    move(21, 31);
+                    printw("    Press any key to quit.");
                     refresh();
+                    ch = getchar();
                     return 0;  // disconnect
                 } else if (strcmp(recvline, "waiting\n") == 0) {
                     move(20, 21);
