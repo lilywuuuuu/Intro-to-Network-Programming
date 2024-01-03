@@ -71,9 +71,11 @@ int main(int argc, char **argv)
 	for (;;)
 	{
 		// printf("OK\n");
+
 		clilen = sizeof(cliaddr);
 		tmp = Accept(listenfd, (SA *)&cliaddr, &clilen);
 		// sprintf(name[i], "%s", str);
+		printf("accepting new client\n");
 
 		readline(tmp, str, sizeof(str));
 
@@ -169,7 +171,7 @@ int main(int argc, char **argv)
 			sprintf(how_many, "sorry\n");
 			if (writen(tmp, how_many, strlen(how_many)) <= 0)
 			{
-				;
+				continue;
 			}
 			close(tmp);
 		}
@@ -268,9 +270,9 @@ room1(void *vptr)
 					// sprintf(how_many, "4\n");
 
 					// card_num round name id score
-					char st[MAXLINE];
-					sprintf(st, "%s %s %s %s %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3]);
-					printf("%s\n", st);
+					// char st[MAXLINE];
+					// sprintf(st, "%s %s %s %s %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3]);
+					// printf("%s\n", st);
 					for (int i = ROOM; i < ROOM + 4; i++)
 					{
 						if (writen(participant[i], four, strlen(four)) <= 0)
@@ -278,11 +280,11 @@ room1(void *vptr)
 							participant[i] = -1;
 							people--;
 						}
-						if (writen(participant[i], st, strlen(st)) <= 0)
-						{
-							participant[i] = -1;
-							people--;
-						}
+						// if (writen(participant[i], st, strlen(st)) <= 0)
+						// {
+						// 	participant[i] = -1;
+						// 	people--;
+						// }
 					}
 					sleep(2);
 					break;
@@ -297,7 +299,7 @@ room1(void *vptr)
 
 		while (1)
 		{
-			printf("room1st\n");
+			// printf("room1st\n");
 			int win = 0;
 			int who = -1;
 
@@ -310,12 +312,20 @@ room1(void *vptr)
 			int pre_turn = turn;
 			maxfdp1 = -1;
 			Pthread_mutex_lock(&(mutex[room_num]));
+			char st[MAXLINE];
+			sprintf(st, "%s %s %s %s %d %d %d %d %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3], score[0], score[1], score[2], score[3]);
 
+			// printf("%s\n", st);
 			for (k = 1; k < 4; k++)
 			{
 				if (participant[ROOM + (pre_turn + k) % 4] != -1)
 				{
 					maxfdp1 = max(maxfdp1, participant[ROOM + ((pre_turn + k) % 4)]);
+					if (writen(participant[ROOM + (pre_turn + k) % 4], st, strlen(st)) <= 0)
+					{
+						participant[ROOM + (pre_turn + k) % 4] = -1;
+						continue;
+					}
 					if (turn == pre_turn)
 					{
 						turn = (pre_turn + k) % 4;
@@ -354,7 +364,7 @@ room1(void *vptr)
 			{
 				if (readline(participant[ROOM + turn], user_time, MAXLINE) <= 0)
 				{
-					;
+					participant[ROOM + turn] = -1;
 				}
 			}
 
@@ -387,7 +397,7 @@ room1(void *vptr)
 			tv.tv_sec = 0;
 			tv.tv_usec = 0;
 			num_ans = select(maxfdp1 + 1, &fd, NULL, NULL, &tv);
-			printf("num_ans: %d\n", num_ans);
+			// printf("num_ans: %d\n", num_ans);
 			if (answer == cards)
 			{
 				if (num_ans != 0)
@@ -455,7 +465,7 @@ room1(void *vptr)
 			// 4 : continue
 			// 1 : three left
 			// 2 : someone win ,send name
-			char st[MAXLINE];
+			// char st[MAXLINE];
 			quit = 0;
 			for (int i = ROOM; i < ROOM + 4; i++)
 			{
@@ -471,19 +481,19 @@ room1(void *vptr)
 			}
 
 			sprintf(st, "%s %s %s %s %d %d %d %d %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3], score[0], score[1], score[2], score[3]);
-			for (int i = ROOM; i < ROOM + 4; i++)
-			{
-				if (participant[i] != -1)
-				{
-					if (writen(participant[i], st, strlen(st)) <= 0)
-					{
-						participant[i] = -1;
-						id[i] = 0;
-						sprintf(name[i], "-");
-						++quit;
-					}
-				}
-			}
+			// for (int i = ROOM; i < ROOM + 4; i++)
+			// {
+			// 	if (participant[i] != -1)
+			// 	{
+			// 		if (writen(participant[i], st, strlen(st)) <= 0)
+			// 		{
+			// 			participant[i] = -1;
+			// 			id[i] = 0;
+			// 			sprintf(name[i], "-");
+			// 			++quit;
+			// 		}
+			// 	}
+			// }
 			int flag = 0;
 			for (int i = ROOM; i < ROOM + 4; i++)
 			{
@@ -494,8 +504,9 @@ room1(void *vptr)
 			}
 			if (flag >= 3)
 			{
-				printf("situation1\n");
-				sprintf(st, "1\n");
+				// printf("situation1\n");
+				// sprintf(st, "1\n");
+				sprintf(st, "1\n%s %s %s %s %d %d %d %d %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3], score[0], score[1], score[2], score[3]);
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
 					if (participant[i] != -1)
@@ -518,8 +529,9 @@ room1(void *vptr)
 			}
 			else if (win == 1)
 			{
-				printf("situation2\n");
-				sprintf(st, "2\n%s\n", name[who]);
+				// printf("situation2\n");
+				// sprintf(st, "2\n%s\n", name[who]);
+				sprintf(st, "2\n%s\n%s %s %s %s %d %d %d %d %d %d %d %d\n", name[who], name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3], score[0], score[1], score[2], score[3]);
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
 					if (participant[i] != -1)
@@ -540,7 +552,8 @@ room1(void *vptr)
 			}
 			else
 			{
-				printf("situation3\n");
+				// printf("situation3\n");
+				// sprintf(st, "4\n%s %s %s %s %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3]);
 				sprintf(st, "4\n");
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
