@@ -6,9 +6,10 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
+
+#include "unp.h"
 #define xmove 2
 #define ymove 2
-#include "unp.h"
 
 void handle_alarm(int sig);
 void scoreboard(int score[5], int id[5], char name[5][15]);
@@ -19,7 +20,10 @@ void show_card(int kind, int num);
 void flip_card(WINDOW *cardwin);
 void before_flip();
 void title();
-void frame(char name[15], int id);
+void welcomeframe(char name[15], int id);
+void gameover();
+void endframe(char winner[15]);
+void endscoreboard(int score[5], int id[5], char name[5][15]);
 
 int main(int argc, char **argv) {
     int sockfd;
@@ -61,15 +65,11 @@ int main(int argc, char **argv) {
     if (strlen(username) > 15)
         err_quit("Username is longer than 15 characters, please try again.");
     Writen(sockfd, sendline, strlen(sendline));  // name
-    // printf("Welcome to Slapjack, %s!\n", username);
-    readline(sockfd, recvline, MAXLINE);  // id
+    readline(sockfd, recvline, MAXLINE);         // id
     sscanf(recvline, "%d", &id);
-    // printf("Your ID is %d.\n", id);
-    move(0, 0);  // move the cursor to the beginning of the line
     title();
     frame(username, id);
     refresh();
-    // printf("Please wait for the server to put you in a room...\n");
 
     stdineof = 0;
     peer_exit = 0;
@@ -129,10 +129,9 @@ int main(int argc, char **argv) {
                     refresh();
                 } else if (strcmp(recvline, "4\n") == 0) {
                     move(21, 31);
-                    printw("The room currently has 4 players...");
-                    move(22, 40);
-                    printw("Game is starting!\n");
+                    printw("         Game is starting!         ");
                     refresh();
+                    move(0, 0);
                     sleep(2);
                     break;
                 }
@@ -155,30 +154,30 @@ int main(int argc, char **argv) {
 
     // game starts
     int card_num = 0, pattern = 0, round = 0;
-    int score[5] = {0, 0, 0, 0};
-    int player_id[5] = {0, 0, 0, 0};
-    char name[5][15] = {"", "", "", ""};
+    int score[4] = {0, 0, 0, 0};
+    int player_id[4] = {0, 0, 0, 0};
+    char name[4][15] = {"", "", "", ""};
 
     // track time
     struct timeval start, end;
     long seconds, useconds;
     double elapsed;
 
-    // initialize screen
+    // clear screen
     clear();
-    readline(sockfd, recvline, MAXLINE);
-    sscanf(recvline, "%s %s %s %s %d %d %d %d",
-           name[0], name[1], name[2], name[3],
-           &player_id[0], &player_id[1], &player_id[2], &player_id[3]);
-    move(0, 0);
-    scoreboard(score, player_id, name);
-    before_flip();
     refresh();
 
-    while (1) {  // Exit loop on 'q' keypress
+    while (1) {
+        // update scoreboard
         move(22, 0);
         printw("                                       ");
         before_flip();
+        readline(sockfd, recvline, MAXLINE);
+        sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
+               name[0], name[1], name[2], name[3],
+               &player_id[0], &player_id[1], &player_id[2], &player_id[3],
+               &score[0], &score[1], &score[2], &score[3]);
+        scoreboard(score, player_id, name);
         refresh();
 
         // flipper?
@@ -209,12 +208,6 @@ int main(int argc, char **argv) {
         // print card
         WINDOW *cardwin = newwin(17, 49, 1 + xmove, 40 + ymove);
         flip_card(cardwin);
-        move(xmove + 11, ymove + 2);
-        printw("               ");
-        move(xmove + 12, ymove + 2);
-        printw("                             ");
-        move(xmove + 11, ymove + 2);
-        printw("Counter:");
         counter(round);
         show_card(pattern, card_num);
         gettimeofday(&start, NULL);
@@ -254,19 +247,12 @@ int main(int argc, char **argv) {
             Writen(sockfd, sendline, strlen(sendline));
         }
 
-        // update scoreboard
-        readline(sockfd, recvline, MAXLINE);
-        sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
-               name[0], name[1], name[2], name[3],
-               &player_id[0], &player_id[1], &player_id[2], &player_id[3],
-               &score[0], &score[1], &score[2], &score[3]);
-        move(0, 0);
-        scoreboard(score, player_id, name);
-        refresh();
-
         // check if game is over
         readline(sockfd, recvline, MAXLINE);
         if (strcmp(recvline, "1\n") == 0) {  // 3 players left
+            endscoreboard(score, id, name);
+            endframe(username);
+            gameover();
             move(xmove + 15, ymove + 2);
             printw("Other players quit, you are the winner!\n");
             move(xmove + 16, ymove + 2);
@@ -277,6 +263,9 @@ int main(int argc, char **argv) {
             break;
         } else if (strcmp(recvline, "2\n") == 0) {  // somebody won
             readline(sockfd, recvline, MAXLINE);
+            endscoreboard(score, id, name);
+            endframe(recvline);
+            gameover();
             sscanf(recvline, "%s\n", name[0]);
             move(xmove + 15, ymove + 2);
             printw("%s won the game!", name[0]);
@@ -287,7 +276,6 @@ int main(int argc, char **argv) {
             refresh();
             break;
         }
-        refresh();
     }
     endwin();
     exit(0);
@@ -297,54 +285,55 @@ void handle_alarm(int sig) {
     return;
 }
 void scoreboard(int score[5], int id[5], char name[5][15]) {
-    printw("=========================================================================================\n\n\n");
-    printw("    |---------------------------|\n");
-    printw("    |\t    Score Board\t        |\n");
-    printw("    |\t\t\t        |\n");
-    printw("    | Score   Name           ID |\n");
+    move(0, 0);
+    printw("=====================================================================================\n");
+    printw("|---------------------------|\n");
+    printw("|\t Score Board\t    |\n");
+    printw("|\t\t\t    |\n");
+    printw("| Score   Name           ID |\n");
     for (int i = 0; i < 4; i++) {
-        printw("    |  %-2d     %-15s%-2d |\n", score[i], name[i], id[i]);
+        printw("|  %-2d     %-15s%-2d |\n", score[i], name[i], id[i]);
     }
-    printw("    |\t\t\t        |\n");
-    printw("    |---------------------------|\n");
-    printw("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    printw("=========================================================================================\n");
+    printw("|\t\t\t    |\n");
+    printw("|---------------------------|\n");
+    printw("\n\n\n\n\n\n\n\n\n\n");
+    printw("=====================================================================================\n");
 }
 void card() {
     attron(COLOR_PAIR(2));
-    move(xmove + 1, ymove + 40);
+    move(1, 40);
     printw("|----------------------|");
-    move(xmove + 2, ymove + 40);
+    move(2, 40);
     printw("|                      |");
-    move(xmove + 3, ymove + 40);
+    move(3, 40);
     printw("|                      |");
-    move(xmove + 4, ymove + 40);
+    move(4, 40);
     printw("|                      |");
-    move(xmove + 5, ymove + 40);
+    move(5, 40);
     printw("|                      |");
-    move(xmove + 6, ymove + 40);
+    move(6, 40);
     printw("|                      |");
-    move(xmove + 7, ymove + 40);
+    move(7, 40);
     printw("|                      |");
-    move(xmove + 8, ymove + 40);
+    move(8, 40);
     printw("|                      |");
-    move(xmove + 9, ymove + 40);
+    move(9, 40);
     printw("|                      |");
-    move(xmove + 10, ymove + 40);
+    move(10, 40);
     printw("|                      |");
-    move(xmove + 11, ymove + 40);
+    move(11, 40);
     printw("|                      |");
-    move(xmove + 12, ymove + 40);
+    move(12, 40);
     printw("|                      |");
-    move(xmove + 13, ymove + 40);
+    move(13, 40);
     printw("|                      |");
-    move(xmove + 14, ymove + 40);
+    move(14, 40);
     printw("|                      |");
-    move(xmove + 15, ymove + 40);
+    move(15, 40);
     printw("|                      |");
-    move(xmove + 16, ymove + 40);
+    move(16, 40);
     printw("|                      |");
-    move(xmove + 17, ymove + 40);
+    move(17, 40);
     printw("|----------------------|");
     attroff(COLOR_PAIR(2));
     return;
@@ -357,114 +346,118 @@ void draw(int mousex, int mousey, int blank) {
     return;
 }
 void counter(int num) {
+    move(xmove + 11, ymove + 2);
+    printw("Counter:       ");
+    move(xmove + 12, ymove + 2);
+    printw("                             ");
     attron(COLOR_PAIR(2));
     if (num == 1) {
-        draw(14 + xmove, ymove + 13, 2);
-        draw(15 + xmove, ymove + 13, 2);
-        draw(16 + xmove, ymove + 6 + 7, 2);
-        draw(17 + xmove, ymove + 6 + 7, 2);
-        draw(18 + xmove, ymove + 13, 2);
+        draw(14, 13, 2);
+        draw(15, 13, 2);
+        draw(16, 6 + 7, 2);
+        draw(17, 6 + 7, 2);
+        draw(18, 13, 2);
     } else if (num == 2) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(3 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(5 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 9);
+        draw(2 + 12, 41 - 31, 9);
+        draw(3 + 12, 48 - 31, 2);
+        draw(4 + 12, 41 - 31, 9);
+        draw(5 + 12, 41 - 31, 2);
+        draw(6 + 12, 41 - 31, 9);
     } else if (num == 3) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(3 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(5 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 9);
+        draw(2 + 12, 41 - 31, 9);
+        draw(3 + 12, 48 - 31, 2);
+        draw(4 + 12, 41 - 31, 9);
+        draw(5 + 12, 48 - 31, 2);
+        draw(6 + 12, 41 - 31, 9);
     } else if (num == 4) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(2 + 12 + xmove, 46 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 46 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(5 + 12 + xmove, 46 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 46 - 31 + ymove, 2);
+        draw(2 + 12, 41 - 31, 2);
+        draw(2 + 12, 46 - 31, 2);
+        draw(3 + 12, 41 - 31, 2);
+        draw(3 + 12, 46 - 31, 2);
+        draw(4 + 12, 41 - 31, 9);
+        draw(5 + 12, 46 - 31, 2);
+        draw(6 + 12, 46 - 31, 2);
     } else if (num == 5) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(5 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 9);
+        draw(2 + 12, 41 - 31, 9);
+        draw(3 + 12, 41 - 31, 2);
+        draw(4 + 12, 41 - 31, 9);
+        draw(5 + 12, 48 - 31, 2);
+        draw(6 + 12, 41 - 31, 9);
     } else if (num == 6) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(5 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 9);
+        draw(2 + 12, 41 - 31, 9);
+        draw(3 + 12, 41 - 31, 2);
+        draw(4 + 12, 41 - 31, 9);
+        draw(5 + 12, 41 - 31, 2);
+        draw(5 + 12, 48 - 31, 2);
+        draw(6 + 12, 41 - 31, 9);
     } else if (num == 7) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(3 + 12 + xmove, 47 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 46 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 45 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 45 - 31 + ymove, 2);
+        draw(2 + 12, 41 - 31, 9);
+        draw(3 + 12, 47 - 31, 2);
+        draw(4 + 12, 46 - 31, 2);
+        draw(5 + 12, 45 - 31, 2);
+        draw(6 + 12, 45 - 31, 2);
     } else if (num == 8) {
-        draw(2 + 12 + xmove, 42 - 31 + ymove, 7);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 42 - 31 + ymove, 7);
-        draw(5 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 42 - 31 + ymove, 7);
+        draw(2 + 12, 42 - 31, 7);
+        draw(3 + 12, 41 - 31, 2);
+        draw(3 + 12, 48 - 31, 2);
+        draw(4 + 12, 42 - 31, 7);
+        draw(5 + 12, 41 - 31, 2);
+        draw(5 + 12, 48 - 31, 2);
+        draw(6 + 12, 42 - 31, 7);
     } else if (num == 9) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(3 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 9);
-        draw(5 + 12 + xmove, 48 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 9);
+        draw(2 + 12, 41 - 31, 9);
+        draw(3 + 12, 48 - 31, 2);
+        draw(3 + 12, 41 - 31, 2);
+        draw(4 + 12, 41 - 31, 9);
+        draw(5 + 12, 48 - 31, 2);
+        draw(6 + 12, 41 - 31, 9);
     } else if (num == 10) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(2 + 12 + xmove, 45 - 31 + ymove, 7);
-        draw(3 + 12 + xmove, 45 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 50 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 45 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 50 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 45 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 50 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 45 - 31 + ymove, 7);
+        draw(2 + 12, 41 - 31, 2);
+        draw(3 + 12, 41 - 31, 2);
+        draw(4 + 12, 41 - 31, 2);
+        draw(5 + 12, 41 - 31, 2);
+        draw(6 + 12, 41 - 31, 2);
+        draw(2 + 12, 45 - 31, 7);
+        draw(3 + 12, 45 - 31, 2);
+        draw(3 + 12, 50 - 31, 2);
+        draw(4 + 12, 45 - 31, 2);
+        draw(4 + 12, 50 - 31, 2);
+        draw(5 + 12, 45 - 31, 2);
+        draw(5 + 12, 50 - 31, 2);
+        draw(6 + 12, 45 - 31, 7);
     } else if (num == 11) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(2 + 12 + xmove, 47 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 47 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 47 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 47 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 47 - 31 + ymove, 2);
+        draw(2 + 12, 41 - 31, 2);
+        draw(3 + 12, 41 - 31, 2);
+        draw(4 + 12, 41 - 31, 2);
+        draw(5 + 12, 41 - 31, 2);
+        draw(6 + 12, 41 - 31, 2);
+        draw(2 + 12, 47 - 31, 2);
+        draw(3 + 12, 47 - 31, 2);
+        draw(4 + 12, 47 - 31, 2);
+        draw(5 + 12, 47 - 31, 2);
+        draw(6 + 12, 47 - 31, 2);
     } else if (num == 12) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(2 + 12 + xmove, 45 - 31 + ymove, 7);
-        draw(3 + 12 + xmove, 50 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 45 - 31 + ymove, 7);
-        draw(5 + 12 + xmove, 45 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 45 - 31 + ymove, 7);
+        draw(2 + 12, 41 - 31, 2);
+        draw(3 + 12, 41 - 31, 2);
+        draw(4 + 12, 41 - 31, 2);
+        draw(5 + 12, 41 - 31, 2);
+        draw(6 + 12, 41 - 31, 2);
+        draw(2 + 12, 45 - 31, 7);
+        draw(3 + 12, 50 - 31, 2);
+        draw(4 + 12, 45 - 31, 7);
+        draw(5 + 12, 45 - 31, 2);
+        draw(6 + 12, 45 - 31, 7);
     } else if (num == 0) {
-        draw(2 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(3 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(5 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 41 - 31 + ymove, 2);
-        draw(2 + 12 + xmove, 45 - 31 + ymove, 7);
-        draw(3 + 12 + xmove, 50 - 31 + ymove, 2);
-        draw(4 + 12 + xmove, 45 - 31 + ymove, 7);
-        draw(5 + 12 + xmove, 50 - 31 + ymove, 2);
-        draw(6 + 12 + xmove, 45 - 31 + ymove, 7);
+        draw(2 + 12, 41 - 31, 2);
+        draw(3 + 12, 41 - 31, 2);
+        draw(4 + 12, 41 - 31, 2);
+        draw(5 + 12, 41 - 31, 2);
+        draw(6 + 12, 41 - 31, 2);
+        draw(2 + 12, 45 - 31, 7);
+        draw(3 + 12, 50 - 31, 2);
+        draw(4 + 12, 45 - 31, 7);
+        draw(5 + 12, 50 - 31, 2);
+        draw(6 + 12, 45 - 31, 7);
     }
     move(20, 0);
     attroff(COLOR_PAIR(2));
@@ -474,163 +467,163 @@ void show_card(int kind, int num) {
     card();
     if (kind == 0) {
         attron(COLOR_PAIR(3));
-        draw(xmove + 12 - 4, ymove + 51, 2);
-        draw(xmove + 13 - 4, ymove + 48, 8);
-        draw(xmove + 14 - 4, ymove + 49, 6);
-        draw(xmove + 15 - 4, ymove + 45, 14);
-        draw(xmove + 16 - 4, ymove + 43, 18);
-        draw(xmove + 17 - 4, ymove + 45, 5);
-        draw(xmove + 13, ymove + 51, 2);
-        draw(xmove + 13, ymove + 54, 5);
-        draw(xmove + 18 - 4, ymove + 51, 2);
-        draw(xmove + 15, ymove + 49, 6);
+        draw(12 - 4, 51, 2);
+        draw(13 - 4, 48, 8);
+        draw(14 - 4, 49, 6);
+        draw(15 - 4, 45, 14);
+        draw(16 - 4, 43, 18);
+        draw(17 - 4, 45, 5);
+        draw(13, 51, 2);
+        draw(13, 54, 5);
+        draw(18 - 4, 51, 2);
+        draw(15, 49, 6);
         attroff(COLOR_PAIR(3));
     } else if (kind == 1) {
         attron(COLOR_PAIR(1));
-        draw(xmove + 8, ymove + 51, 2);
-        draw(xmove + 9, ymove + 50, 4);
-        draw(xmove + 10, ymove + 48, 8);
-        draw(xmove + 11, ymove + 46, 12);
-        draw(xmove + 12, ymove + 44, 16);
-        draw(xmove + 13, ymove + 46, 12);
-        draw(xmove + 14, ymove + 48, 8);
-        draw(xmove + 15, ymove + 50, 4);
-        draw(xmove + 16, ymove + 51, 2);
+        draw(8, 51, 2);
+        draw(9, 50, 4);
+        draw(10, 48, 8);
+        draw(11, 46, 12);
+        draw(12, 44, 16);
+        draw(13, 46, 12);
+        draw(14, 48, 8);
+        draw(15, 50, 4);
+        draw(16, 51, 2);
         attroff(COLOR_PAIR(1));
     } else if (kind == 2) {
         attron(COLOR_PAIR(1));
-        draw(xmove + 8, ymove + 44, 4);
-        draw(xmove + 8, ymove + 56, 4);
-        draw(xmove + 9, ymove + 43, 7);
-        draw(xmove + 9, ymove + 54, 7);
-        draw(xmove + 10, ymove + 42, 9);
-        draw(xmove + 10, ymove + 53, 9);
-        draw(xmove + 11, ymove + 43, 18);
-        draw(xmove + 12, ymove + 45, 14);
-        draw(xmove + 13, ymove + 46, 12);
-        draw(xmove + 14, ymove + 47, 10);
-        draw(xmove + 15, ymove + 49, 6);
-        draw(xmove + 16, ymove + 51, 2);
+        draw(8, 44, 4);
+        draw(8, 56, 4);
+        draw(9, 43, 7);
+        draw(9, 54, 7);
+        draw(10, 42, 9);
+        draw(10, 53, 9);
+        draw(11, 43, 18);
+        draw(12, 45, 14);
+        draw(13, 46, 12);
+        draw(14, 47, 10);
+        draw(15, 49, 6);
+        draw(16, 51, 2);
         attroff(COLOR_PAIR(1));
     } else if (kind == 3) {
         attron(COLOR_PAIR(3));
-        draw(xmove + 8, ymove + 51, 2);
-        draw(xmove + 9, ymove + 49, 6);
-        draw(xmove + 10, ymove + 47, 10);
-        draw(xmove + 11, ymove + 45, 14);
-        draw(xmove + 12, ymove + 43, 18);
-        draw(xmove + 13, ymove + 43, 6);
-        draw(xmove + 13, ymove + 51, 2);
-        draw(xmove + 13, ymove + 55, 6);
-        draw(xmove + 14, ymove + 51, 2);
-        draw(xmove + 15, ymove + 50, 4);
-        draw(xmove + 16, ymove + 49, 6);
+        draw(8, 51, 2);
+        draw(9, 49, 6);
+        draw(10, 47, 10);
+        draw(11, 45, 14);
+        draw(12, 43, 18);
+        draw(13, 43, 6);
+        draw(13, 51, 2);
+        draw(13, 55, 6);
+        draw(14, 51, 2);
+        draw(15, 50, 4);
+        draw(16, 49, 6);
         attroff(COLOR_PAIR(3));
     }
     attron(COLOR_PAIR(3));
     if (num == 1) {
         // 45 center
-        draw(xmove + 2, ymove + 42, 7);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 3, ymove + 48, 2);
-        draw(xmove + 4, ymove + 41, 9);
-        draw(xmove + 5, ymove + 41, 2);
-        draw(xmove + 5, ymove + 48, 2);
-        draw(xmove + 6, ymove + 41, 2);
-        draw(xmove + 6, ymove + 48, 2);
+        draw(2, 42, 7);
+        draw(3, 41, 2);
+        draw(3, 48, 2);
+        draw(4, 41, 9);
+        draw(5, 41, 2);
+        draw(5, 48, 2);
+        draw(6, 41, 2);
+        draw(6, 48, 2);
     } else if (num == 2) {
-        draw(xmove + 2, ymove + 41, 9);
-        draw(xmove + 3, ymove + 48, 2);
-        draw(xmove + 4, ymove + 41, 9);
-        draw(xmove + 5, ymove + 41, 2);
-        draw(xmove + 6, ymove + 41, 9);
+        draw(2, 41, 9);
+        draw(3, 48, 2);
+        draw(4, 41, 9);
+        draw(5, 41, 2);
+        draw(6, 41, 9);
     } else if (num == 3) {
-        draw(xmove + 2, ymove + 41, 9);
-        draw(xmove + 3, ymove + 48, 2);
-        draw(xmove + 4, ymove + 41, 9);
-        draw(xmove + 5, ymove + 48, 2);
-        draw(xmove + 6, ymove + 41, 9);
+        draw(2, 41, 9);
+        draw(3, 48, 2);
+        draw(4, 41, 9);
+        draw(5, 48, 2);
+        draw(6, 41, 9);
     } else if (num == 4) {
-        draw(xmove + 2, ymove + 41, 2);
-        draw(xmove + 2, ymove + 46, 2);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 3, ymove + 46, 2);
-        draw(xmove + 4, ymove + 41, 9);
-        draw(xmove + 5, ymove + 46, 2);
-        draw(xmove + 6, ymove + 46, 2);
+        draw(2, 41, 2);
+        draw(2, 46, 2);
+        draw(3, 41, 2);
+        draw(3, 46, 2);
+        draw(4, 41, 9);
+        draw(5, 46, 2);
+        draw(6, 46, 2);
     } else if (num == 5) {
-        draw(xmove + 2, ymove + 41, 9);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 4, ymove + 41, 9);
-        draw(xmove + 5, ymove + 48, 2);
-        draw(xmove + 6, ymove + 41, 9);
+        draw(2, 41, 9);
+        draw(3, 41, 2);
+        draw(4, 41, 9);
+        draw(5, 48, 2);
+        draw(6, 41, 9);
     } else if (num == 6) {
-        draw(xmove + 2, ymove + 41, 9);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 4, ymove + 41, 9);
-        draw(xmove + 5, ymove + 41, 2);
-        draw(xmove + 5, ymove + 48, 2);
-        draw(xmove + 6, ymove + 41, 9);
+        draw(2, 41, 9);
+        draw(3, 41, 2);
+        draw(4, 41, 9);
+        draw(5, 41, 2);
+        draw(5, 48, 2);
+        draw(6, 41, 9);
     } else if (num == 7) {
-        draw(xmove + 2, ymove + 41, 9);
-        draw(xmove + 3, ymove + 47, 2);
-        draw(xmove + 4, ymove + 46, 2);
-        draw(xmove + 5, ymove + 45, 2);
-        draw(xmove + 6, ymove + 45, 2);
+        draw(2, 41, 9);
+        draw(3, 47, 2);
+        draw(4, 46, 2);
+        draw(5, 45, 2);
+        draw(6, 45, 2);
     } else if (num == 8) {
-        draw(xmove + 2, ymove + 42, 7);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 3, ymove + 48, 2);
-        draw(xmove + 4, ymove + 42, 7);
-        draw(xmove + 5, ymove + 41, 2);
-        draw(xmove + 5, ymove + 48, 2);
-        draw(xmove + 6, ymove + 42, 7);
+        draw(2, 42, 7);
+        draw(3, 41, 2);
+        draw(3, 48, 2);
+        draw(4, 42, 7);
+        draw(5, 41, 2);
+        draw(5, 48, 2);
+        draw(6, 42, 7);
     } else if (num == 9) {
-        draw(xmove + 2, ymove + 41, 9);
-        draw(xmove + 3, ymove + 48, 2);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 4, ymove + 41, 9);
-        draw(xmove + 5, ymove + 48, 2);
-        draw(xmove + 6, ymove + 41, 9);
+        draw(2, 41, 9);
+        draw(3, 48, 2);
+        draw(3, 41, 2);
+        draw(4, 41, 9);
+        draw(5, 48, 2);
+        draw(6, 41, 9);
     } else if (num == 10) {
-        draw(xmove + 2, ymove + 41, 2);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 4, ymove + 41, 2);
-        draw(xmove + 5, ymove + 41, 2);
-        draw(xmove + 6, ymove + 41, 2);
-        draw(xmove + 2, ymove + 45, 7);
-        draw(xmove + 3, ymove + 45, 2);
-        draw(xmove + 3, ymove + 50, 2);
-        draw(xmove + 4, ymove + 45, 2);
-        draw(xmove + 4, ymove + 50, 2);
-        draw(xmove + 5, ymove + 45, 2);
-        draw(xmove + 5, ymove + 50, 2);
-        draw(xmove + 6, ymove + 45, 7);
+        draw(2, 41, 2);
+        draw(3, 41, 2);
+        draw(4, 41, 2);
+        draw(5, 41, 2);
+        draw(6, 41, 2);
+        draw(2, 45, 7);
+        draw(3, 45, 2);
+        draw(3, 50, 2);
+        draw(4, 45, 2);
+        draw(4, 50, 2);
+        draw(5, 45, 2);
+        draw(5, 50, 2);
+        draw(6, 45, 7);
     } else if (num == 11) {
-        draw(xmove + 2, ymove + 41, 9);
-        draw(xmove + 3, ymove + 46, 2);
-        draw(xmove + 4, ymove + 46, 2);
-        draw(xmove + 5, ymove + 41, 2);
-        draw(xmove + 5, ymove + 46, 2);
-        draw(xmove + 6, ymove + 42, 5);
+        draw(2, 41, 9);
+        draw(3, 46, 2);
+        draw(4, 46, 2);
+        draw(5, 41, 2);
+        draw(5, 46, 2);
+        draw(6, 42, 5);
     } else if (num == 12) {
-        draw(xmove + 2, ymove + 41, 7);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 3, ymove + 46, 2);
-        draw(xmove + 4, ymove + 41, 2);
-        draw(xmove + 4, ymove + 45, 3);
-        draw(xmove + 5, ymove + 41, 8);
-        draw(xmove + 6, ymove + 47, 2);
+        draw(2, 41, 7);
+        draw(3, 41, 2);
+        draw(3, 46, 2);
+        draw(4, 41, 2);
+        draw(4, 45, 3);
+        draw(5, 41, 8);
+        draw(6, 47, 2);
     } else if (num == 0) {
-        draw(xmove + 2, ymove + 41, 2);
-        draw(xmove + 2, ymove + 47, 2);
-        draw(xmove + 3, ymove + 41, 2);
-        draw(xmove + 3, ymove + 45, 3);
-        draw(xmove + 4, ymove + 41, 5);
-        draw(xmove + 5, ymove + 41, 2);
-        draw(xmove + 5, ymove + 45, 3);
-        draw(xmove + 6, ymove + 41, 2);
-        draw(xmove + 6, ymove + 47, 2);
+        draw(2, 41, 2);
+        draw(2, 47, 2);
+        draw(3, 41, 2);
+        draw(3, 45, 3);
+        draw(4, 41, 5);
+        draw(5, 41, 2);
+        draw(5, 45, 3);
+        draw(6, 41, 2);
+        draw(6, 47, 2);
     }
     attroff(COLOR_PAIR(3));
     move(20, 0);
@@ -692,39 +685,39 @@ void flip_card(WINDOW *cardwin) {
 }
 void before_flip() {
     attron(COLOR_PAIR(2));
-    move(xmove + 1, ymove + 40);
+    move(1, 40);
     printw("|----------------------|");
-    move(xmove + 2, ymove + 40);
+    move(2, 40);
     printw("| * * * * * * * * * * *|");
-    move(xmove + 3, ymove + 40);
+    move(3, 40);
     printw("|* * * * * * * * * * * |");
-    move(xmove + 4, ymove + 40);
+    move(4, 40);
     printw("| * * * * * * * * * * *|");
-    move(xmove + 5, ymove + 40);
+    move(5, 40);
     printw("|* * * * * * * * * * * |");
-    move(xmove + 6, ymove + 40);
+    move(6, 40);
     printw("| * * * * * * * * * * *|");
-    move(xmove + 7, ymove + 40);
+    move(7, 40);
     printw("|* * * * * * * * * * * |");
-    move(xmove + 8, ymove + 40);
+    move(8, 40);
     printw("| * * * * * * * * * * *|");
-    move(xmove + 9, ymove + 40);
+    move(9, 40);
     printw("|* * * * * * * * * * * |");
-    move(xmove + 10, ymove + 40);
+    move(10, 40);
     printw("| * * * * * * * * * * *|");
-    move(xmove + 11, ymove + 40);
+    move(11, 40);
     printw("|* * * * * * * * * * * |");
-    move(xmove + 12, ymove + 40);
+    move(12, 40);
     printw("| * * * * * * * * * * *|");
-    move(xmove + 13, ymove + 40);
+    move(13, 40);
     printw("|* * * * * * * * * * * |");
-    move(xmove + 14, ymove + 40);
+    move(14, 40);
     printw("| * * * * * * * * * * *|");
-    move(xmove + 15, ymove + 40);
+    move(15, 40);
     printw("|* * * * * * * * * * * |");
-    move(xmove + 16, ymove + 40);
+    move(16, 40);
     printw("| * * * * * * * * * * *|");
-    move(xmove + 17, ymove + 40);
+    move(17, 40);
     printw("|----------------------|");
     attroff(COLOR_PAIR(2));
     return;
@@ -744,7 +737,7 @@ void title() {
     printw("                  |_|                               \n");
     move(0, 0);
 }
-void frame(char name[15], int id) {
+void welcomeframe(char name[15], int id) {
     move(6, 0);
     char m[30];
     sprintf(m, "Welcome to SlapJack, %s.", name);
@@ -766,4 +759,61 @@ void frame(char name[15], int id) {
     printw("| Please wait for the server to put you in a room!  |\n");
     move(11, 21);
     printw("|---------------------------------------------------|\n");
+}
+void gameover() {
+    move(0, 16);
+    printw("    __                           _                 ");
+    move(1, 16);
+    printw("  / __|   _ _ _ _   __   ___   / _ \\__   __ __ _ __ ");
+    move(2, 16);
+    printw(" | |  _ / _  | '_ \\/_ \\ / _ \\ | | | \\ \\ / / _ | '__|");
+    move(3, 16);
+    printw(" | |_| | (_| | | | | | |  __/ | |_| |\\ V |  __| |   ");
+    move(4, 16);
+    printw("  \\____|\\__,_|_| |_| |_|\\___|  \\___/  \\_/ \\___|_|");
+    return;
+}
+void endframe(char winner[15]) {
+    move(6, 35);
+    printw("|----------------------------------------------|");
+    move(7, 35);
+    printw("|                                              |");
+    move(8, 35);
+    printw("|                                              |");
+    move(9, 35);
+    printw("|                                              |");
+    move(10, 35);
+    printw("|                                              |");
+    move(11, 35);
+    printw("|                                              |");
+    move(12, 35);
+    printw("|                                              |");
+    move(13, 35);
+    printw("|----------------------------------------------|");
+    char m[50];
+    sprintf(m, "%s gets 10 points!", winner);
+    int start = (49 - strlen(m)) / 2 + 35;
+    move(8, start);
+    printw("%s", m);
+    sprintf(m, "The game is over.");
+    start = (49 - strlen(m)) / 2 + 35;
+    move(10, start);
+    printw("%s", m);
+}
+void endscoreboard(int score[5], int id[5], char name[5][15]) {
+    move(6, 0);
+    printw("|---------------------------|\n");
+    printw("| Score   Name           ID |\n");
+    for (int i = 0; i < 4; i++) {
+        if (score[i] == 10) {
+            printw("|");
+            attron(COLOR_PAIR(1));
+            printw("  %-2d     %-15s%-2d ", score[i], name[i], id[i]);
+            attroff(COLOR_PAIR(1));
+            printw("|\n");
+        }
+        printw("|  %-2d     %-15s%-2d |\n", score[i], name[i], id[i]);
+    }
+    printw("|---------------------------|\n");
+    return;
 }
