@@ -114,27 +114,25 @@ int main(int argc, char **argv) {
                 } else if (strcmp(recvline, "waiting\n") == 0) {
                     move(20, 22);
                     printw("You are in a room! Please wait for the game to start.\n");
-                    refresh();
                 } else if (strcmp(recvline, "1\n") == 0) {
                     move(21, 31);
                     printw("The room currently has 1 player...\n");
-                    refresh();
                 } else if (strcmp(recvline, "2\n") == 0) {
                     move(21, 31);
                     printw("The room currently has 2 players...\n");
-                    refresh();
                 } else if (strcmp(recvline, "3\n") == 0) {
                     move(21, 31);
                     printw("The room currently has 3 players...\n");
-                    refresh();
                 } else if (strcmp(recvline, "4\n") == 0) {
                     move(21, 31);
                     printw("         Game is starting!         ");
-                    refresh();
                     move(0, 0);
+                    refresh();
                     sleep(2);
                     break;
                 }
+                move(0, 0);
+                refresh();
             }
         }
         if (FD_ISSET(fileno(fp), &rset)) {  // input is readable
@@ -171,13 +169,13 @@ int main(int argc, char **argv) {
         // update scoreboard
         move(xmove + 22, ymove + 2);
         printw("                                       ");
-        before_flip();
         readline(sockfd, recvline, MAXLINE);
         sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
                name[0], name[1], name[2], name[3],
                &player_id[0], &player_id[1], &player_id[2], &player_id[3],
                &score[0], &score[1], &score[2], &score[3]);
         scoreboard(score, player_id, name);
+        before_flip();
         refresh();
 
         // flipper?
@@ -281,15 +279,15 @@ void handle_alarm(int sig) {
 void scoreboard(int score[5], int id[5], char name[5][15]) {
     move(0, 0);
     printw(" =====================================================================================\n\n");
-    printw(" |---------------------------|\n");
-    printw(" |\t Score Board\t    |\n");
-    printw(" |\t\t\t    |\n");
-    printw(" | Score   Name           ID |\n");
+    printw("  |---------------------------|\n");
+    printw("  |\t Score Board\t      |\n");
+    printw("  |\t\t\t      |\n");
+    printw("  | Score   Name           ID |\n");
     for (int i = 0; i < 4; i++) {
         printw(" |  %-2d     %-15s%-2d |\n", score[i], name[i], id[i]);
     }
-    printw(" |\t\t\t    |\n");
-    printw(" |---------------------------|\n");
+    printw("  |\t\t\t      |\n");
+    printw("  |---------------------------|\n");
     printw("\n\n\n\n\n\n\n\n\n\n\n\n");
     printw(" =====================================================================================\n");
 }
@@ -679,39 +677,39 @@ void flip_card(WINDOW *cardwin) {
 }
 void before_flip() {
     attron(COLOR_PAIR(2));
-    move(1, 40);
+    move(xmove + 1, ymove + 40);
     printw("|----------------------|");
-    move(2, 40);
+    move(xmove + 2, ymove + 40);
     printw("| * * * * * * * * * * *|");
-    move(3, 40);
+    move(xmove + 3, ymove + 40);
     printw("|* * * * * * * * * * * |");
-    move(4, 40);
+    move(xmove + 4, ymove + 40);
     printw("| * * * * * * * * * * *|");
-    move(5, 40);
+    move(xmove + 5, ymove + 40);
     printw("|* * * * * * * * * * * |");
-    move(6, 40);
+    move(xmove + 6, ymove + 40);
     printw("| * * * * * * * * * * *|");
-    move(7, 40);
+    move(xmove + 7, ymove + 40);
     printw("|* * * * * * * * * * * |");
-    move(8, 40);
+    move(xmove + 8, ymove + 40);
     printw("| * * * * * * * * * * *|");
-    move(9, 40);
+    move(xmove + 9, ymove + 40);
     printw("|* * * * * * * * * * * |");
-    move(10, 40);
+    move(xmove + 10, ymove + 40);
     printw("| * * * * * * * * * * *|");
-    move(11, 40);
+    move(xmove + 11, ymove + 40);
     printw("|* * * * * * * * * * * |");
-    move(12, 40);
+    move(xmove + 12, ymove + 40);
     printw("| * * * * * * * * * * *|");
-    move(13, 40);
+    move(xmove + 13, ymove + 40);
     printw("|* * * * * * * * * * * |");
-    move(14, 40);
+    move(xmove + 14, ymove + 40);
     printw("| * * * * * * * * * * *|");
-    move(15, 40);
+    move(xmove + 15, ymove + 40);
     printw("|* * * * * * * * * * * |");
-    move(16, 40);
+    move(xmove + 16, ymove + 40);
     printw("| * * * * * * * * * * *|");
-    move(17, 40);
+    move(xmove + 17, ymove + 40);
     printw("|----------------------|");
     attroff(COLOR_PAIR(2));
     return;
