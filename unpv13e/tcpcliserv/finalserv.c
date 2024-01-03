@@ -246,8 +246,9 @@ room1(void *vptr)
 
 			if (maxfdp1 == -1)
 			{
+				room_status[room_num] = 0;
 				Pthread_mutex_unlock(&(mutex[room_num]));
-				sleep(5);
+				sleep(1);
 			}
 			else
 			{
@@ -303,12 +304,12 @@ room1(void *vptr)
 						// 	people--;
 						// }
 					}
-					sleep(2);
+
 					if (people == 4)
 					{
 						room_status[room_num] = 1;
 					}
-
+					// sleep(1);
 					Pthread_mutex_unlock(&(mutex[room_num]));
 					break;
 				}
@@ -316,7 +317,7 @@ room1(void *vptr)
 				{
 					room_status[room_num] = 0;
 					Pthread_mutex_unlock(&(mutex[room_num]));
-					sleep(5);
+					sleep(1);
 					// printf("OK\n");
 				}
 			}
@@ -474,7 +475,7 @@ room1(void *vptr)
 					if (who != -1)
 					{
 						score[who - ROOM]++;
-						if (score[who - ROOM] >= 1)
+						if (score[who - ROOM] >= 3)
 						{
 							win = 1;
 						}
