@@ -128,9 +128,7 @@ int main(int argc, char **argv) {
                     refresh();
                 } else if (strcmp(recvline, "4\n") == 0) {
                     move(21, 31);
-                    printw("The room currently has 4 players...");
-                    move(22, 40);
-                    printw("Game is starting!\n");
+                    printw("         Game is starting!         ");
                     refresh();
                     sleep(2);
                     break;
