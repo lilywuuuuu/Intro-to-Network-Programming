@@ -161,20 +161,21 @@ int main(int argc, char **argv) {
     long seconds, useconds;
     double elapsed;
 
-    // initialize screen
+    // clear screen
     clear();
-    readline(sockfd, recvline, MAXLINE);
-    sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
-           name[0], name[1], name[2], name[3],
-           &player_id[0], &player_id[1], &player_id[2], &player_id[3], 
-           &score[0], &score[1], &score[2], &score[3]);
-    scoreboard(score, player_id, name);
     refresh();
 
-    while (1) {  // Exit loop on 'q' keypress
+    while (1) { 
+        // update scoreboard
         move(22, 0);
         printw("                                       ");
         before_flip();
+        readline(sockfd, recvline, MAXLINE);
+        sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
+               name[0], name[1], name[2], name[3],
+               &player_id[0], &player_id[1], &player_id[2], &player_id[3],
+               &score[0], &score[1], &score[2], &score[3]);
+        scoreboard(score, player_id, name);
         refresh();
 
         // flipper?
@@ -267,15 +268,6 @@ int main(int argc, char **argv) {
             refresh();
             break;
         }
-
-        // update scoreboard
-        readline(sockfd, recvline, MAXLINE);
-        sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
-               name[0], name[1], name[2], name[3],
-               &player_id[0], &player_id[1], &player_id[2], &player_id[3],
-               &score[0], &score[1], &score[2], &score[3]);
-        scoreboard(score, player_id, name);
-        refresh();
     }
     endwin();
     exit(0);
