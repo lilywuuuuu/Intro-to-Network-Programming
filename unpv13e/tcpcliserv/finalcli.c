@@ -10,6 +10,7 @@
 #include "unp.h"
 #define xmove 2
 #define ymove 2
+#define winpoint 1
 
 void handle_alarm(int sig);
 void scoreboard(int score[5], int id[5], char name[5][15]);
@@ -30,7 +31,7 @@ int main(int argc, char **argv) {
     struct sockaddr_in servaddr;
     int maxfdp1, stdineof, peer_exit, n, id;
     fd_set rset;
-    char readbuffer[MAXLINE], recvline[MAXLINE], sendline[MAXLINE];
+    char recvline[MAXLINE], sendline[MAXLINE];
     char username[MAXLINE];
     char ch;
     FILE *fp = stdin;
@@ -105,24 +106,24 @@ int main(int argc, char **argv) {
                 recvline[n] = '\0';
                 if (strcmp(recvline, "sorry\n") == 0) {
                     move(20, 23);
-                    printw("Sorry, the rooms are full. Please try again later.\n");
+                    printw("Sorry, the rooms are full. Please try again later.");
                     move(21, 23);
-                    printw("Press any key to quit.\n");
+                    printw("Press any key to quit.");
                     ch = getchar();
                     refresh();
                     return 0;  // disconnect
                 } else if (strcmp(recvline, "waiting\n") == 0) {
-                    move(20, 22);
-                    printw("You are in a room! Please wait for the game to start.\n");
+                    move(20, 21);
+                    printw("You are in a room! Please wait for the game to start.");
                 } else if (strcmp(recvline, "1\n") == 0) {
                     move(21, 31);
-                    printw("The room currently has 1 player...\n");
+                    printw("The room currently has 1 player...");
                 } else if (strcmp(recvline, "2\n") == 0) {
                     move(21, 31);
-                    printw("The room currently has 2 players...\n");
+                    printw("The room currently has 2 players...");
                 } else if (strcmp(recvline, "3\n") == 0) {
                     move(21, 31);
-                    printw("The room currently has 3 players...\n");
+                    printw("The room currently has 3 players...");
                 } else if (strcmp(recvline, "4\n") == 0) {
                     move(21, 31);
                     printw("         Game is starting!         ");
@@ -135,20 +136,23 @@ int main(int argc, char **argv) {
                 refresh();
             }
         }
-        if (FD_ISSET(fileno(fp), &rset)) {  // input is readable
-            Fgets(readbuffer, MAXLINE, fp);
-            if (strcmp(readbuffer, "q\n") == 0) {
-                if (peer_exit)
-                    return 0;
-                else {
-                    move(20, 30);
-                    printw("Thank you for playing, see you next time!\n");
-                    stdineof = 1;
-                    return 0;  // disconnect
-                };
-            }
+        // change to nonblocking
+        nodelay(stdscr, TRUE);
+        ch = getch();
+        if (ch == 'q') {
+            if (peer_exit)
+                return 0;
+            else {
+                move(20, 30);
+                printw("Thank you for playing, see you next time!\n");
+                stdineof = 1;
+                return 0;  // disconnect
+            };
         }
     }
+
+    // change to blocking
+    nodelay(stdscr, FALSE);
 
     // game starts
     int card_num = 0, pattern = 0, round = 0;
@@ -167,7 +171,7 @@ int main(int argc, char **argv) {
 
     while (1) {
         // update scoreboard
-        move(xmove + 22, ymove + 2);
+        move(xmove + 21, ymove + 2);
         printw("                                       ");
         readline(sockfd, recvline, MAXLINE);
         sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
@@ -220,16 +224,8 @@ int main(int argc, char **argv) {
             printf("Bye!\n");
             break;
         } else {
-            move(xmove + 22, ymove + 2);
-            if (ch == '\n')
-                printw("You pressed enter!");
-            else if (ch == ' ')
-                printw("You pressed space!");
-            else if (ch == -1) {  // didn't hit
+            if (ch == -1)  // didn't hit
                 hit = 0;
-            } else
-                printw("You pressed %c!", ch);
-            refresh();
             gettimeofday(&end, NULL);
         }
 
@@ -239,7 +235,7 @@ int main(int argc, char **argv) {
             useconds = end.tv_usec - start.tv_usec;
             elapsed = seconds + useconds / 1000000.0;
             snprintf(sendline, MAXLINE, "%.6f\n", elapsed);
-            move(xmove + 22, ymove + 2);
+            move(xmove + 21, ymove + 2);
             printw("You hit the card in %.6f seconds.", elapsed);
             refresh();
             Writen(sockfd, sendline, strlen(sendline));
@@ -247,27 +243,27 @@ int main(int argc, char **argv) {
 
         // check if game is over
         readline(sockfd, recvline, MAXLINE);
-        if (strcmp(recvline, "1\n") == 0) {  // 3 players left
+        if (strcmp(recvline, "1\n") == 0 || strcmp(recvline, "2\n") == 0) {
             clear();
-            endscoreboard(score, player_id, name);
-            endframe(username, 1);
-            gameover();
-            flushinp();
-            ch = getch();
-            refresh();
-            break;
-        } else if (strcmp(recvline, "2\n") == 0) {  // somebody won
-            clear();
+            if (strcmp(recvline, "1\n") == 0) {  // 3 players left
+                endframe(username, 1);
+            } else if (strcmp(recvline, "2\n") == 0) {  // somebody won
+                readline(sockfd, recvline, MAXLINE);
+                endframe(recvline, 2);
+            }
             readline(sockfd, recvline, MAXLINE);
+            sscanf(recvline, "%s %s %s %s %d %d %d %d %d %d %d %d",
+                   name[0], name[1], name[2], name[3],
+                   &player_id[0], &player_id[1], &player_id[2], &player_id[3],
+                   &score[0], &score[1], &score[2], &score[3]);
             endscoreboard(score, player_id, name);
-            endframe(recvline, 2);
             gameover();
-            sscanf(recvline, "%s\n", name[0]);
             flushinp();
             ch = getch();
             refresh();
             break;
         }
+        move(0, 0);
     }
     endwin();
     exit(0);
@@ -280,16 +276,17 @@ void scoreboard(int score[5], int id[5], char name[5][15]) {
     move(0, 0);
     printw(" =====================================================================================\n\n");
     printw("  |---------------------------|\n");
-    printw("  |\t Score Board\t      |\n");
-    printw("  |\t\t\t      |\n");
+    printw("  |        Score Board        |\n");
+    printw("  |                           |\n");
     printw("  | Score   Name           ID |\n");
     for (int i = 0; i < 4; i++) {
-        printw(" |  %-2d     %-15s%-2d |\n", score[i], name[i], id[i]);
+        printw("  |  %-2d     %-15s%-2d |\n", score[i], name[i], id[i]);
     }
     printw("  |\t\t\t      |\n");
     printw("  |---------------------------|\n");
     printw("\n\n\n\n\n\n\n\n\n\n\n\n");
     printw(" =====================================================================================\n");
+    move(0, 0);
 }
 void card() {
     attron(COLOR_PAIR(2));
@@ -328,6 +325,7 @@ void card() {
     move(xmove + 17, ymove + 40);
     printw("|----------------------|");
     attroff(COLOR_PAIR(2));
+    move(0, 0);
     return;
 }
 void draw(int mousex, int mousey, int blank) {
@@ -335,6 +333,7 @@ void draw(int mousex, int mousey, int blank) {
     for (int i = 0; i < blank; i++) {
         printw(" ");
     }
+    move(0, 0);
     return;
 }
 void counter(int num) {
@@ -451,7 +450,7 @@ void counter(int num) {
         draw(5 + 12 + xmove, 50 - 31 + ymove, 2);
         draw(6 + 12 + xmove, 45 - 31 + ymove, 7);
     }
-    move(20, 0);
+    move(0, 0);
     attroff(COLOR_PAIR(2));
     return;
 }
@@ -618,7 +617,7 @@ void show_card(int kind, int num) {
         draw(xmove + 6, ymove + 47, 2);
     }
     attroff(COLOR_PAIR(3));
-    move(20, 0);
+    move(0, 0);
     return;
 }
 void flip_card(WINDOW *cardwin) {
@@ -672,7 +671,7 @@ void flip_card(WINDOW *cardwin) {
     delwin(cardwin);
     wattroff(cardwin, COLOR_PAIR(2));
     attroff(COLOR_PAIR(4));
-    move(20, 0);
+    move(0, 0);
     return;
 }
 void before_flip() {
@@ -712,21 +711,22 @@ void before_flip() {
     move(xmove + 17, ymove + 40);
     printw("|----------------------|");
     attroff(COLOR_PAIR(2));
+    move(0, 0);
     return;
 }
 void title() {
     move(0, 21);
-    printw("  ____   _                    _               _     \n");
+    printw("  ____   _                    _               _     ");
     move(1, 21);
-    printw(" / ___| | |  __ _  _ __      | |  __ _   ___ | | __ \n");
+    printw(" / ___| | |  __ _  _ __      | |  __ _   ___ | | __ ");
     move(2, 21);
-    printw(" \\___ \\ | | / _` || '_ \\  _  | | / _` | / __|| |/ / \n");
+    printw(" \\___ \\ | | / _` || '_ \\  _  | | / _` | / __|| |/ / ");
     move(3, 21);
-    printw("  ___) || || (_| || |_) || |_| || (_| || (__ |   <  \n");
+    printw("  ___) || || (_| || |_) || |_| || (_| || (__ |   <  ");
     move(4, 21);
-    printw(" |____/ |_| \\__,_|| .__/  \\___/  \\__,_| \\___||_|\\_\\ \n");
+    printw(" |____/ |_| \\__,_|| .__/  \\___/  \\__,_| \\___||_|\\_\\ ");
     move(5, 21);
-    printw("                  |_|                               \n");
+    printw("                  |_|                               ");
     move(0, 0);
 }
 void welcomeframe(char name[15], int id) {
@@ -734,83 +734,91 @@ void welcomeframe(char name[15], int id) {
     char m[30];
     sprintf(m, "Welcome to SlapJack, %s.", name);
     int start = (53 - strlen(m)) / 2;
-    move(6, 21);
-    printw("|---------------------------------------------------|\n");
     move(7, 21);
-    printw("|                                                   |\n");
+    printw("|---------------------------------------------------|");
     move(8, 21);
-    printw("|                                                   |\n");
-    move(8, start + 21);
-    printw("%s", m);
-    ;
-    move(8, 52 + 21);
-    printw("|");
+    printw("|                                                   |");
     move(9, 21);
-    printw("|                  Your ID is %-2d                    |\n", id);
+    printw("|                                                   |");
+    move(9, start + 21);
+    printw("%s", m);
+    move(9, 52 + 21);
+    printw("|");
     move(10, 21);
-    printw("| Please wait for the server to put you in a room!  |\n");
+    printw("|                  Your ID is %-2d                    |", id);
     move(11, 21);
-    printw("|---------------------------------------------------|\n");
+    printw("| Please wait for the server to put you in a room!  |");
+    move(12, 21);
+    printw("|                                                   |");
+    move(13, 21);
+    printw("|---------------------------------------------------|");
+    move(0, 0);
 }
 void gameover() {
-    move(0, 16);
+    move(0, 20);
     printw("    __                           _                 ");
-    move(1, 16);
+    move(1, 20);
     printw("  / __|   _ _ _ _   __   ___   / _ \\__   __ __ _ __ ");
-    move(2, 16);
+    move(2, 20);
     printw(" | |  _ / _  | '_ \\/_ \\ / _ \\ | | | \\ \\ / / _ | '__|");
-    move(3, 16);
+    move(3, 20);
     printw(" | |_| | (_| | | | | | |  __/ | |_| |\\ V |  __| |   ");
-    move(4, 16);
+    move(4, 20);
     printw("  \\____|\\__,_|_| |_| |_|\\___|  \\___/  \\_/ \\___|_|");
+    move(0, 0);
     return;
 }
 void endframe(char winner[15], int type) {
     move(6, 35);
-    printw("|----------------------------------------------|");
+    printw("|---------------------------------------------------|");
     move(7, 35);
-    printw("|                                              |");
+    printw("|                                                   |");
     move(8, 35);
-    printw("|                                              |");
+    printw("|                                                   |");
     move(9, 35);
-    printw("|                                              |");
+    printw("|                                                   |");
     move(10, 35);
-    printw("|                                              |");
+    printw("|                                                   |");
     move(11, 35);
-    printw("|                                              |");
+    printw("|                                                   |");
     move(12, 35);
-    printw("|                                              |");
-    move(13, 35);
-    printw("|----------------------------------------------|");
+    printw("|---------------------------------------------------|");
 
     char m[50];
     if (type == 1) {
-        sprintf(m, "Other players left the game, %s is the winner!", winner);
+        sprintf(m, "Other players left, %s is the winner!", winner);
     } else if (type == 2) {
-        sprintf(m, "%s gets 10 points!", winner);
+        winner[strlen(winner) - 1] = '\0';
+        sprintf(m, "%s got %d point(s), %s is the winner!", winner, winpoint, winner);
     }
-    int start = (49 - strlen(m)) / 2 + 35;
+    int start = (54 - strlen(m)) / 2 + 35;
     move(8, start);
     printw("%s", m);
     sprintf(m, "The game is over.");
-    start = (49 - strlen(m)) / 2 + 35;
+    start = (54 - strlen(m)) / 2 + 35;
     move(10, start);
     printw("%s", m);
+    move(0, 0);
 }
 void endscoreboard(int score[5], int id[5], char name[5][15]) {
     move(6, 0);
-    printw("|---------------------------|\n");
-    printw("| Score   Name           ID |\n");
+    printw("  |---------------------------|");
+    move(7, 0);
+    printw("  | Score   Name           ID |");
+    int moveindex = 8;
     for (int i = 0; i < 4; i++) {
+        move(moveindex++, 0);
         if (score[i] == 10) {
-            printw("|");
+            printw("  |");
             attron(COLOR_PAIR(1));
             printw("  %-2d     %-15s%-2d ", score[i], name[i], id[i]);
             attroff(COLOR_PAIR(1));
-            printw("|\n");
+            printw("|");
         }
-        printw("|  %-2d     %-15s%-2d |\n", score[i], name[i], id[i]);
+        printw("  |  %-2d     %-15s%-2d |", score[i], name[i], id[i]);
     }
-    printw("|---------------------------|\n");
+    move(moveindex, 0);
+    printw("  |---------------------------|");
+    move(0, 0);
     return;
 }

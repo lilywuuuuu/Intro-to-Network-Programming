@@ -474,7 +474,7 @@ room1(void *vptr)
 					if (who != -1)
 					{
 						score[who - ROOM]++;
-						if (score[who - ROOM] >= 3)
+						if (score[who - ROOM] >= 1)
 						{
 							win = 1;
 						}
