@@ -248,7 +248,7 @@ room1(void *vptr)
 			{
 				room_status[room_num] = 0;
 				Pthread_mutex_unlock(&(mutex[room_num]));
-				sleep(1);
+				sleep(2);
 			}
 			else
 			{
@@ -309,7 +309,7 @@ room1(void *vptr)
 					{
 						room_status[room_num] = 1;
 					}
-					// sleep(1);
+					sleep(2);
 					Pthread_mutex_unlock(&(mutex[room_num]));
 					break;
 				}
@@ -317,7 +317,7 @@ room1(void *vptr)
 				{
 					room_status[room_num] = 0;
 					Pthread_mutex_unlock(&(mutex[room_num]));
-					sleep(1);
+					sleep(2);
 					// printf("OK\n");
 				}
 			}
