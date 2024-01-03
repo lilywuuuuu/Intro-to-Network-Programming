@@ -279,6 +279,8 @@ room1(void *vptr)
 						{
 							participant[i] = -1;
 							people--;
+							sprintf(name[i], "-");
+							id[i] = 0;
 						}
 						// if (writen(participant[i], st, strlen(st)) <= 0)
 						// {
@@ -315,17 +317,23 @@ room1(void *vptr)
 			char st[MAXLINE];
 			sprintf(st, "%s %s %s %s %d %d %d %d %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3], score[0], score[1], score[2], score[3]);
 
-			// printf("%s\n", st);
+			printf("%s\n", st);
+			for (int i = ROOM; i < ROOM + 4; i++)
+			{
+				if (participant[i] != -1)
+				{
+					if (writen(participant[i], st, strlen(st)) <= 0)
+					{
+						participant[i] = -1;
+					}
+				}
+			}
 			for (k = 1; k < 4; k++)
 			{
 				if (participant[ROOM + (pre_turn + k) % 4] != -1)
 				{
 					maxfdp1 = max(maxfdp1, participant[ROOM + ((pre_turn + k) % 4)]);
-					if (writen(participant[ROOM + (pre_turn + k) % 4], st, strlen(st)) <= 0)
-					{
-						participant[ROOM + (pre_turn + k) % 4] = -1;
-						continue;
-					}
+
 					if (turn == pre_turn)
 					{
 						turn = (pre_turn + k) % 4;
@@ -480,7 +488,7 @@ room1(void *vptr)
 				}
 			}
 
-			sprintf(st, "%s %s %s %s %d %d %d %d %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3], score[0], score[1], score[2], score[3]);
+			// sprintf(st, "%s %s %s %s %d %d %d %d %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3], score[0], score[1], score[2], score[3]);
 			// for (int i = ROOM; i < ROOM + 4; i++)
 			// {
 			// 	if (participant[i] != -1)
@@ -523,6 +531,7 @@ room1(void *vptr)
 					participant[i] = -1;
 					id[i] = 0;
 					sprintf(name[i], "-");
+					score[i - ROOM] = 0;
 				}
 				Pthread_mutex_unlock(&(mutex[room_num]));
 				goto re;
@@ -546,6 +555,9 @@ room1(void *vptr)
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
 					participant[i] = -1;
+					id[i] = 0;
+					score[i - ROOM] = 0;
+					sprintf(name[i], "-");
 				}
 				Pthread_mutex_unlock(&(mutex[room_num]));
 				goto re;
