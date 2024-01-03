@@ -11,6 +11,7 @@
 #define ROOM4 12
 // int a;
 int sep_room[4];
+int room_status[4];
 pthread_mutex_t mutex[4];
 
 const char kick[200] = "You won\n";
@@ -31,6 +32,7 @@ int main(int argc, char **argv)
 			sep_room[i] = i * 4;
 			pthread_mutex_init(&mutex[i], NULL);
 		}
+		room_status[i] = 0;
 	}
 	signal(SIGPIPE, SIG_IGN);
 
@@ -90,32 +92,12 @@ int main(int argc, char **argv)
 		{
 			continue;
 		}
-
-		Pthread_mutex_lock(&(mutex[0]));
-
-		// writen(participant[i], how_many, strlen(how_many));
-		for (int i = ROOM1; i < ROOM1 + 4; i++)
+		if (room_status[0] == 0)
 		{
-			if (participant[i] == -1)
-			{
-				participant[i] = tmp;
-				flag = 1;
-				id[i] = counter;
-				++counter;
-				// printf("OK\n");
-				sprintf(name[i], "%s", str);
-				// printf("OK\n");
-				// writen(participant[i], how_many, strlen(how_many));
-				// printf("OK\n");
-				break;
-			}
-		}
-		Pthread_mutex_unlock(&(mutex[0]));
-		if (flag == 0)
-		{
-			Pthread_mutex_lock(&(mutex[1]));
+			Pthread_mutex_lock(&(mutex[0]));
 
-			for (int i = ROOM2; i < ROOM2 + 4; i++)
+			// writen(participant[i], how_many, strlen(how_many));
+			for (int i = ROOM1; i < ROOM1 + 4; i++)
 			{
 				if (participant[i] == -1)
 				{
@@ -123,52 +105,86 @@ int main(int argc, char **argv)
 					flag = 1;
 					id[i] = counter;
 					++counter;
+					// printf("OK\n");
 					sprintf(name[i], "%s", str);
+					// printf("OK\n");
 					// writen(participant[i], how_many, strlen(how_many));
+					// printf("OK\n");
 					break;
 				}
 			}
-			Pthread_mutex_unlock(&(mutex[1]));
+			Pthread_mutex_unlock(&(mutex[0]));
+		}
+
+		if (flag == 0)
+		{
+			if (room_status[1] == 0)
+			{
+				Pthread_mutex_lock(&(mutex[1]));
+
+				for (int i = ROOM2; i < ROOM2 + 4; i++)
+				{
+					if (participant[i] == -1)
+					{
+						participant[i] = tmp;
+						flag = 1;
+						id[i] = counter;
+						++counter;
+						sprintf(name[i], "%s", str);
+						// writen(participant[i], how_many, strlen(how_many));
+						break;
+					}
+				}
+				Pthread_mutex_unlock(&(mutex[1]));
+			}
 		}
 		if (flag == 0)
 		{
-			Pthread_mutex_lock(&(mutex[2]));
-			for (int i = ROOM3; i < ROOM3 + 4; i++)
+			if (room_status[2] == 0)
 			{
-				if (participant[i] == -1)
+				Pthread_mutex_lock(&(mutex[2]));
+
+				for (int i = ROOM3; i < ROOM3 + 4; i++)
 				{
-					participant[i] = tmp;
-					flag = 1;
-					id[i] = counter;
-					++counter;
-					sprintf(name[i], "%s", str);
-					// writen(participant[i], how_many, strlen(how_many));
-					break;
+					if (participant[i] == -1)
+					{
+						participant[i] = tmp;
+						flag = 1;
+						id[i] = counter;
+						++counter;
+						sprintf(name[i], "%s", str);
+						// writen(participant[i], how_many, strlen(how_many));
+						break;
+					}
 				}
+				Pthread_mutex_unlock(&(mutex[2]));
 			}
-			Pthread_mutex_unlock(&(mutex[2]));
 		}
 		if (flag == 0)
 		{
-			Pthread_mutex_lock(&(mutex[3]));
-			for (int i = ROOM4; i < ROOM4 + 4; i++)
+			if (room_status[3] == 0)
 			{
-				if (participant[i] == -1)
+				Pthread_mutex_lock(&(mutex[3]));
+				for (int i = ROOM4; i < ROOM4 + 4; i++)
 				{
-					participant[i] = tmp;
-					flag = 1;
-					id[i] = counter;
-					++counter;
-					sprintf(name[i], "%s", str);
-					// writen(participant[i], how_many, strlen(how_many));
-					break;
+					if (participant[i] == -1)
+					{
+						participant[i] = tmp;
+						flag = 1;
+						id[i] = counter;
+						++counter;
+						sprintf(name[i], "%s", str);
+						// writen(participant[i], how_many, strlen(how_many));
+						break;
+					}
 				}
+				Pthread_mutex_unlock(&(mutex[3]));
 			}
-			Pthread_mutex_unlock(&(mutex[3]));
 		}
 		if (flag == 0)
 		{
 			sprintf(how_many, "sorry\n");
+			printf("sorry\n");
 			if (writen(tmp, how_many, strlen(how_many)) <= 0)
 			{
 				continue;
@@ -263,7 +279,6 @@ room1(void *vptr)
 					}
 				}
 
-				Pthread_mutex_unlock(&(mutex[room_num]));
 				if (people == 4)
 				{
 					const char four[200] = "4\n";
@@ -289,10 +304,18 @@ room1(void *vptr)
 						// }
 					}
 					sleep(2);
+					if (people == 4)
+					{
+						room_status[room_num] = 1;
+					}
+
+					Pthread_mutex_unlock(&(mutex[room_num]));
 					break;
 				}
 				else
 				{
+					room_status[room_num] = 0;
+					Pthread_mutex_unlock(&(mutex[room_num]));
 					sleep(5);
 					// printf("OK\n");
 				}
@@ -316,10 +339,14 @@ room1(void *vptr)
 			Pthread_mutex_lock(&(mutex[room_num]));
 			char st[MAXLINE];
 			sprintf(st, "%s %s %s %s %d %d %d %d %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3], score[0], score[1], score[2], score[3]);
-
+			int people_flag = 0;
 			printf("%s\n", st);
 			for (int i = ROOM; i < ROOM + 4; i++)
 			{
+				if (participant[i] == -1)
+				{
+					people_flag = 1;
+				}
 				if (participant[i] != -1)
 				{
 					if (writen(participant[i], st, strlen(st)) <= 0)
@@ -327,6 +354,14 @@ room1(void *vptr)
 						participant[i] = -1;
 					}
 				}
+			}
+			if (people_flag == 1)
+			{
+				room_status[room_num] = 0;
+			}
+			else
+			{
+				room_status[room_num] = 1;
 			}
 			for (k = 1; k < 4; k++)
 			{
@@ -343,6 +378,7 @@ room1(void *vptr)
 
 			if (maxfdp1 == -1)
 			{
+				// room_status[room_num] = 0;d
 				Pthread_mutex_unlock(&(mutex[room_num]));
 				goto re;
 			}
@@ -533,6 +569,7 @@ room1(void *vptr)
 					sprintf(name[i], "-");
 					score[i - ROOM] = 0;
 				}
+				room_status[room_num] = 0;
 				Pthread_mutex_unlock(&(mutex[room_num]));
 				goto re;
 			}
@@ -559,6 +596,7 @@ room1(void *vptr)
 					score[i - ROOM] = 0;
 					sprintf(name[i], "-");
 				}
+				room_status[room_num] = 0;
 				Pthread_mutex_unlock(&(mutex[room_num]));
 				goto re;
 			}
@@ -567,6 +605,7 @@ room1(void *vptr)
 				// printf("situation3\n");
 				// sprintf(st, "4\n%s %s %s %s %d %d %d %d\n", name[ROOM], name[ROOM + 1], name[ROOM + 2], name[ROOM + 3], id[ROOM], id[ROOM + 1], id[ROOM + 2], id[ROOM + 3]);
 				sprintf(st, "4\n");
+				int flag = 0;
 				for (int i = ROOM; i < ROOM + 4; i++)
 				{
 					if (participant[i] != -1)
@@ -579,6 +618,14 @@ room1(void *vptr)
 							sprintf(name[i], "-");
 						}
 					}
+					else
+					{
+						flag = 1;
+					}
+				}
+				if (flag == 1)
+				{
+					room_status[room_num] = 0;
 				}
 			}
 
