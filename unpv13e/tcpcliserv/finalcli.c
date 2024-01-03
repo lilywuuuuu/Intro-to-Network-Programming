@@ -221,7 +221,6 @@ int main(int argc, char **argv) {
         flushinp();
         ch = getch();
         if (ch == 'q') {
-            printf("Bye!\n");
             break;
         } else {
             if (ch == -1)  // didn't hit
