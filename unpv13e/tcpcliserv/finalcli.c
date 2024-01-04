@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
     init_pair(1, COLOR_RED, COLOR_RED);
     init_pair(2, COLOR_BLACK, COLOR_WHITE);
     init_pair(3, COLOR_WHITE, COLOR_BLACK);
+    init_pair(4, COLOR_RED, COLOR_BLACK);
 
     // initialize connection
     if (argc != 3)
@@ -810,12 +811,12 @@ void endscoreboard(int score[5], int id[5], char name[5][15]) {
         move(moveindex++, 0);
         if (score[i] == winpoint) {
             printw("  |");
-            attron(COLOR_PAIR(1));
+            attron(COLOR_PAIR(4));
             printw("  %-2d     %-15s%-2d ", score[i], name[i], id[i]);
-            attroff(COLOR_PAIR(1));
+            attroff(COLOR_PAIR(4));
             printw("|");
         }
-        printw("  |  %-2d     %-15s%-2d |", score[i], name[i], id[i]);
+        else printw("  |  %-2d     %-15s%-2d |", score[i], name[i], id[i]);
     }
     move(moveindex, 0);
     printw("  |---------------------------|");
